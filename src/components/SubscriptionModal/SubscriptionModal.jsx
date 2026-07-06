@@ -166,27 +166,76 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
   };
 
   // Submit Handlers
-  const handleSubSubmit = (e) => {
+  const handleSubSubmit = async (e) => {
     e.preventDefault();
     if (pricing.totalPayable <= 0) {
       alert("Please select at least one meal to subscribe.");
       return;
     }
 
+    const durationText = subscriptionForm.duration === "1day" ? "1 Day Trial" : 
+                         subscriptionForm.duration === "3days" ? "3 Days Trial" :
+                         subscriptionForm.duration === "weekly" ? "Weekly Subscription" : "Monthly Subscription";
+
     setSummaryData({
       type: "subscription",
       title: subscriptionForm.mealPlan,
-      duration: subscriptionForm.duration === "1day" ? "1 Day Trial" : 
-                subscriptionForm.duration === "3days" ? "3 Days Trial" :
-                subscriptionForm.duration === "weekly" ? "Weekly Subscription" : "Monthly Subscription",
+      duration: durationText,
       diet: subscriptionForm.dietType,
       amount: pricing.totalPayable.toFixed(2),
       date: subscriptionForm.startDate,
     });
     setIsSuccess(true);
+
+    const activeMeals = [
+      subscriptionForm.mealPreferences.breakfast && "Breakfast",
+      subscriptionForm.mealPreferences.lunch && "Lunch",
+      subscriptionForm.mealPreferences.dinner && "Dinner"
+    ].filter(Boolean).join(", ");
+
+    const selectedAddons = [
+      subscriptionForm.addOns.fruitBowl && "Fruit Bowl (+₹59/day)",
+      subscriptionForm.addOns.paneerTofu && "Grilled Paneer/Tofu (+₹59/day)",
+      subscriptionForm.addOns.drink && "Drink (+₹29/day)"
+    ].filter(Boolean).join(", ");
+
+    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${subscriptionForm.mealPlan}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #2ecc71; border-bottom: 2px solid #2ecc71; padding-bottom: 8px; margin-top: 0;">New Subscription Order Confirmed</h2>
+        <p><strong>Meal Plan:</strong> ${subscriptionForm.mealPlan}</p>
+        <p><strong>Diet Style:</strong> ${subscriptionForm.dietType}</p>
+        <p><strong>Meals Selected:</strong> ${activeMeals || "None"}</p>
+        <p><strong>Add-Ons:</strong> ${selectedAddons || "None"}</p>
+        <p><strong>Subscription Mode:</strong> ${subscriptionForm.subType === "trial" ? "Trial Period" : "Regular Subscription"}</p>
+        <p><strong>Duration:</strong> ${durationText} (${pricing.days} Days)</p>
+        <p><strong>Start Date:</strong> ${subscriptionForm.startDate}</p>
+        <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount Paid: ₹${pricing.totalPayable.toFixed(2)}</h3>
+        <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
+        <p style="font-size: 0.85em; color: #777; margin-bottom: 0;">Sent from YAMKITCH Web Portal</p>
+      </div>
+    `;
+
+    try {
+      await fetch("https://corsproxy.io/?https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "YAMKITCH Portal <onboarding@resend.dev>",
+          to: "yamkitch@gmail.com",
+          subject: emailSubject,
+          html: emailHtml,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to dispatch email:", error);
+    }
   };
 
-  const handleCorpSubmit = (e) => {
+  const handleCorpSubmit = async (e) => {
     e.preventDefault();
     setSummaryData({
       type: "corporate",
@@ -197,6 +246,47 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       phone: corporateForm.phone,
     });
     setIsSuccess(true);
+
+    const requiredMeals = [
+      corporateForm.mealsNeeded.breakfast && "Breakfast",
+      corporateForm.mealsNeeded.lunch && "Lunch",
+      corporateForm.mealsNeeded.dinner && "Dinner"
+    ].filter(Boolean).join(", ");
+
+    const emailSubject = `[YAMKITCH] New Catering & Quote Enquiry - ${corporateForm.name}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">New Event Catering Request</h2>
+        <p><strong>Contact Person:</strong> ${corporateForm.name}</p>
+        <p><strong>Email:</strong> ${corporateForm.email}</p>
+        <p><strong>Phone:</strong> ${corporateForm.phone}</p>
+        <p><strong>Company/Organisation:</strong> ${corporateForm.orgName}</p>
+        <p><strong>Program/Event Type:</strong> ${corporateForm.programType}</p>
+        <p><strong>Expected Guest Count:</strong> ${corporateForm.guestsCount}</p>
+        <p><strong>Catering Style:</strong> ${corporateForm.serviceStyle}</p>
+        <p><strong>Meals Required:</strong> ${requiredMeals || "None"}</p>
+        <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
+        <p style="font-size: 0.85em; color: #777; margin-bottom: 0;">Sent from YAMKITCH Web Portal</p>
+      </div>
+    `;
+
+    try {
+      await fetch("https://corsproxy.io/?https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "YAMKITCH Portal <onboarding@resend.dev>",
+          to: "yamkitch@gmail.com",
+          subject: emailSubject,
+          html: emailHtml,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to dispatch email:", error);
+    }
   };
 
   if (!isOpen) return null;

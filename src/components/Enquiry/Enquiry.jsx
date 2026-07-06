@@ -22,10 +22,44 @@ const Enquiry = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real application, you would submit to an API here.
+    
+    const emailSubject = `[YAMKITCH] New General / Corporate Enquiry - ${formData.name}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px;">New Enquiry Details</h2>
+        <p><strong>Name:</strong> ${formData.name}</p>
+        <p><strong>Email:</strong> ${formData.email}</p>
+        <p><strong>Phone:</strong> ${formData.phone}</p>
+        <p><strong>Organisation:</strong> ${formData.orgName}</p>
+        <p><strong>Employee Strength:</strong> ${formData.strength || "N/A"}</p>
+        <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
+        <p style="font-size: 0.85em; color: #777;">Sent from YAMKITCH Web Portal</p>
+      </div>
+    `;
+
+    // Alert the user immediately for good UX
     alert(`Thank you ${formData.name}! Your enquiry has been received. Our team will contact you within 24 hours.`);
+
+    try {
+      await fetch("https://corsproxy.io/?https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "YAMKITCH Portal <onboarding@resend.dev>",
+          to: "yamkitch@gmail.com",
+          subject: emailSubject,
+          html: emailHtml,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to dispatch email:", error);
+    }
+
     setFormData({
       name: "",
       email: "",
