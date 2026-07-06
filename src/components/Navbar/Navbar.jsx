@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaFacebookF, FaInstagram } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -14,13 +14,9 @@ const Navbar = () => {
       <div className="container navbar-container">
 
         <a href="/" className="logo">
-          <video 
-            src="/Animate_this_logo_1080p_202607061927.mp4" 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
-            preload="auto"
+          <img 
+            src="/WhatsApp_Image_2026-07-05_at_21.14.02-removebg-preview.png" 
+            alt="YAMKITCH Logo"
           />
         </a>
 
@@ -40,15 +36,47 @@ const Navbar = () => {
             <li><a href="#" onClick={() => setIsOpen(false)}>Contact</a></li>
           </ul>
           
-          <button className="quote-btn nav-quote-btn" onClick={() => setIsOpen(false)}>
-            Get Quote
-          </button>
+          <div className="nav-socials mobile-socials">
+            <a 
+              href="https://www.facebook.com/profile.php?id=61572043829117" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              onClick={() => setIsOpen(false)}
+              aria-label="Facebook"
+            >
+              <FaFacebookF />
+            </a>
+            <a 
+              href="https://www.instagram.com/yamkitch?igsh=MTVpNDR1NXh0dWs1aQ==" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              onClick={() => setIsOpen(false)}
+              aria-label="Instagram"
+            >
+              <FaInstagram />
+            </a>
+          </div>
         </nav>
 
-        {/* Desktop Quote Button */}
-        <button className="quote-btn desktop-quote-btn">
-          Get Quote
-        </button>
+        {/* Desktop Social Icons */}
+        <div className="nav-socials desktop-socials">
+          <a 
+            href="https://www.facebook.com/profile.php?id=61572043829117" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="Facebook"
+          >
+            <FaFacebookF />
+          </a>
+          <a 
+            href="https://www.instagram.com/yamkitch?igsh=MTVpNDR1NXh0dWs1aQ==" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="Instagram"
+          >
+            <FaInstagram />
+          </a>
+        </div>
 
       </div>
     </header>

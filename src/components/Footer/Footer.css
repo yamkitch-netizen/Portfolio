@@ -41,6 +41,7 @@
     display: block;
     width: 150px;
 }
+.footer-logo img,
 .footer-logo video {
     width: 100%;
     height: auto;

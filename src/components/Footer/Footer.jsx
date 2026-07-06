@@ -11,13 +11,9 @@ const Footer = () => {
           {/* Column 1: Brand & Socials */}
           <div className="footer-brand">
             <a href="/" className="footer-logo">
-              <video 
-                src="/Animate_this_logo_1080p_202607061927.mp4" 
-                autoPlay 
-                loop 
-                muted 
-                playsInline
-                preload="auto"
+              <img 
+                src="/WhatsApp_Image_2026-07-05_at_21.14.02-removebg-preview.png" 
+                alt="YAMKITCH Logo"
               />
             </a>
             <p>
