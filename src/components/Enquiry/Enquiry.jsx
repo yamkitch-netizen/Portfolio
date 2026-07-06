@@ -102,7 +102,7 @@ const Enquiry = () => {
               </div>
               <div className="info-text">
                 <h4>Email Us</h4>
-                <a href="mailto:corporate@yamkitch.com">corporate@yamkitch.com</a>
+                <a href="mailto:corporate@yamkitch.com">yamkitch@gmail.com</a>
               </div>
             </div>
 
@@ -112,7 +112,7 @@ const Enquiry = () => {
               </div>
               <div className="info-text">
                 <h4>Call Us</h4>
-                <a href="tel:+919876543210">+91 98765 43210</a>
+                <a href="tel:+919876543210">+91 60335 50539</a>
               </div>
             </div>
 
@@ -122,7 +122,7 @@ const Enquiry = () => {
               </div>
               <div className="info-text">
                 <h4>Our Location</h4>
-                <p>Noida, NCR, India</p>
+                <p>Agartala, Tripura, India</p>
               </div>
             </div>
           </div>
