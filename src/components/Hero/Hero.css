@@ -314,9 +314,7 @@
     }
     
     .hero-right {
-        --lady-opacity: 0.15;
-        width: 70%;
-        max-height: 60vh;
+        display: none;
     }
     
     .hero h1 {
