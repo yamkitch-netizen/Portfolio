@@ -1,0 +1,256 @@
+.enquiry {
+    position: relative;
+    padding: 140px 0;
+    background: #080808;
+    overflow: hidden;
+}
+
+/* Background Backlight Glow */
+.enquiry-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: #D4A017;
+    filter: blur(160px);
+    opacity: 0.07;
+    bottom: -200px;
+    right: -100px;
+    pointer-events: none;
+}
+
+.enquiry-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Left Side - Info Content */
+.enquiry-left span {
+    color: #D4A017;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.enquiry-left h2 {
+    font-size: 3.2rem;
+    color: white;
+    margin: 0 0 25px;
+    line-height: 1.2;
+    font-weight: 700;
+
+    /* Animated Gold Gradient Text */
+    background: linear-gradient(
+        120deg,
+        #ffffff 0%,
+        #ffffff 35%,
+        #D4A017 50%,
+        #ffffff 65%,
+        #ffffff 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    
+    animation: text-gradient-loop 8s linear infinite;
+}
+
+.enquiry-left p {
+    color: #bdbdbd;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 45px;
+    max-width: 500px;
+}
+
+/* Contact Details Info Items */
+.enquiry-info {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.enquiry-info-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.info-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(212, 160, 23, 0.08);
+    border: 1px solid rgba(212, 160, 23, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D4A017;
+    font-size: 1.25rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enquiry-info-item:hover .info-icon {
+    background: #D4A017;
+    color: black;
+    border-color: #D4A017;
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.4);
+    transform: scale(1.05);
+}
+
+.info-text h4 {
+    color: #777;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 4px;
+}
+
+.info-text a, 
+.info-text p {
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin: 0;
+}
+
+.info-text a:hover {
+    color: #D4A017;
+}
+
+/* Right Side - Form Card */
+.enquiry-form-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 45px;
+    box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.08),
+        0 30px 60px rgba(0, 0, 0, 0.6);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.enquiry-form-card:hover {
+    border-color: rgba(212, 160, 23, 0.2);
+    box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.08),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(212, 160, 23, 0.05);
+}
+
+.enquiry-form-card h3 {
+    font-size: 1.8rem;
+    color: white;
+    margin: 0 0 35px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.form-group select option {
+    background: #111;
+    color: white;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Input Focus States */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #D4A017;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 12px rgba(212, 160, 23, 0.15);
+}
+
+/* Submit Button Wrap */
+.form-btn-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.submit-btn {
+    padding: 14px 44px;
+    background: none;
+    border: 2px solid #D4A017;
+    border-radius: 50px;
+    color: #D4A017;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit-btn:hover {
+    background: #D4A017;
+    color: black;
+    box-shadow: 0 0 25px rgba(212, 160, 23, 0.45);
+    transform: translateY(-2px);
+}
+
+/* Responsive Styles */
+@media(max-width: 992px) {
+    .enquiry {
+        padding: 100px 0;
+    }
+    
+    .enquiry-grid-layout {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    .enquiry-left {
+        text-align: center;
+    }
+
+    .enquiry-left p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .enquiry-info {
+        align-items: center;
+    }
+
+    .enquiry-info-item {
+        text-align: left;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .enquiry-form-card {
+        padding: 35px 25px;
+    }
+
+    .enquiry-left h2 {
+        font-size: 2.5rem;
+    }
+}
