@@ -224,7 +224,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "YAMKITCH Portal <onboarding@resend.dev>",
+          from: "YAMKITCH Portal <portal@yamkitch.in>",
           to: "yamkitch@gmail.com",
           subject: emailSubject,
           html: emailHtml,
@@ -278,7 +278,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "YAMKITCH Portal <onboarding@resend.dev>",
+          from: "YAMKITCH Portal <portal@yamkitch.in>",
           to: "yamkitch@gmail.com",
           subject: emailSubject,
           html: emailHtml,
