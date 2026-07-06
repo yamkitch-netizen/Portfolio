@@ -205,6 +205,20 @@
     }
 }
 
+@media(max-width:576px){
+    .experience-title h2{
+        font-size:32px;
+    }
+
+    .experience{
+        padding:100px 0;
+    }
+
+    .experience-title{
+        margin-bottom:50px;
+    }
+}
+
 /* Text Gradient animation loop keyframe */
 @keyframes text-gradient-loop {
     0% {

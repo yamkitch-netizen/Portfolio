@@ -63,41 +63,47 @@ const OfferStory = () => {
     const section = sectionRef.current;
     const panels = gsap.utils.toArray(".offer-panel");
 
-    // Set initial visibility states
-    gsap.set(panels[0], { autoAlpha: 1 });
-    panels.slice(1).forEach((p) => gsap.set(p, { autoAlpha: 0 }));
+    let mm = gsap.matchMedia();
 
-    // Build a crossfade timeline: panel[i] fades out while panel[i+1] fades in
-    const tl = gsap.timeline();
-    panels.forEach((panel, i) => {
-      if (i < N - 1) {
-        tl.to(panel, { autoAlpha: 0, duration: 1 })
-          .to(panels[i + 1], { autoAlpha: 1, duration: 1 }, "<");
-      }
+    mm.add("(min-width: 901px)", () => {
+      // Set initial visibility states
+      gsap.set(panels[0], { autoAlpha: 1 });
+      panels.slice(1).forEach((p) => gsap.set(p, { autoAlpha: 0 }));
+
+      // Build a crossfade timeline: panel[i] fades out while panel[i+1] fades in
+      const tl = gsap.timeline();
+      panels.forEach((panel, i) => {
+        if (i < N - 1) {
+          tl.to(panel, { autoAlpha: 0, duration: 1 })
+            .to(panels[i + 1], { autoAlpha: 1, duration: 1 }, "<");
+        }
+      });
+
+      // Pin the section and drive the timeline with scroll + snap
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: `+=${(N - 1) * 600}`,
+        pin: true,
+        pinSpacing: true,
+        animation: tl,
+        scrub: 0.3,
+        snap: {
+          snapTo: 1 / (N - 1),
+          duration: 0.3,
+          delay: 0.05,
+          ease: "power2.out",
+        },
+        onUpdate: (self) => {
+          const index = Math.round(self.progress * (N - 1));
+          document.querySelectorAll(".offer-dot").forEach((d, i) => {
+            d.classList.toggle("active", i === index);
+          });
+        },
+      });
     });
 
-    // Pin the section and drive the timeline with scroll + snap
-    ScrollTrigger.create({
-      trigger: section,
-      start: "top top",
-      end: `+=${(N - 1) * 600}`,
-      pin: true,
-      pinSpacing: true,
-      animation: tl,
-      scrub: 0.3,
-      snap: {
-        snapTo: 1 / (N - 1),
-        duration: 0.3,
-        delay: 0.05,
-        ease: "power2.out",
-      },
-      onUpdate: (self) => {
-        const index = Math.round(self.progress * (N - 1));
-        document.querySelectorAll(".offer-dot").forEach((d, i) => {
-          d.classList.toggle("active", i === index);
-        });
-      },
-    });
+    return () => mm.revert();
   }, { scope: sectionRef });
 
   return (
