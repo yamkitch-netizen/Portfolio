@@ -5,6 +5,7 @@ import EmployeeExperience from "../components/EmployeeExperience/EmployeeExperie
 import WaysToBring from "../components/WaysToBring/WaysToBring";
 import OfferStory from "../components/OfferStory/OfferStory";
 import Enquiry from "../components/Enquiry/Enquiry";
+import Footer from "../components/Footer/Footer";
 
 const Home = () => {
   return (
@@ -16,6 +17,7 @@ const Home = () => {
       <WaysToBring />
       <OfferStory />
       <Enquiry />
+      <Footer />
     </>
   );
 };
