@@ -1,0 +1,451 @@
+/* ── Step Indicator ── */
+.cm-steps {
+    display: flex;
+    align-items: center;
+    padding: 18px 28px 0;
+    gap: 0;
+}
+
+.cm-step {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    opacity: 0.35;
+    transition: opacity 0.3s ease;
+}
+
+.cm-step.active { opacity: 1; }
+
+.cm-step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(212, 160, 23, 0.15);
+    border: 2px solid rgba(212, 160, 23, 0.3);
+    color: #D4A017;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.cm-step.active .cm-step-dot {
+    background: #D4A017;
+    border-color: #D4A017;
+    color: #000;
+}
+
+.cm-step-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.cm-step-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(212, 160, 23, 0.2);
+    margin: 0 12px;
+}
+
+/* ── User Detail Fields ── */
+.cm-user-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.cm-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cm-field-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #ccc;
+    letter-spacing: 0.3px;
+}
+
+.cm-field-group label span {
+    color: #D4A017;
+    margin-left: 2px;
+}
+
+.cm-item-input.error {
+    border-color: rgba(255, 80, 80, 0.6);
+    background: rgba(255, 80, 80, 0.04);
+}
+
+.cm-field-error {
+    font-size: 0.76rem;
+    color: #ff6b6b;
+    margin-top: 2px;
+}
+
+/* ── Backdrop ── */
+.custom-meal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: cm-backdrop-in 0.25s ease forwards;
+}
+
+@keyframes cm-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Modal Box */
+.custom-meal-modal {
+    background: #141414;
+    border: 1px solid rgba(212, 160, 23, 0.25);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(212, 160, 23, 0.08);
+    animation: cm-modal-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cm-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ── Success Overlay ── */
+.cm-success-overlay {
+    position: absolute;
+    inset: 0;
+    background: #141414;
+    border-radius: 24px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px;
+    text-align: center;
+    animation: cm-backdrop-in 0.3s ease forwards;
+}
+
+.cm-success-icon {
+    font-size: 3.5rem;
+    color: #D4A017;
+    animation: cm-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cm-pop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+.cm-success-overlay h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.cm-success-overlay p {
+    font-size: 0.95rem;
+    color: #aaa;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 320px;
+}
+
+.cm-success-close {
+    margin-top: 8px;
+    background: #D4A017;
+    color: #000;
+    font-weight: 700;
+    font-size: 0.95rem;
+    font-family: inherit;
+    padding: 12px 32px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cm-success-close:hover {
+    background: #e6b020;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 160, 23, 0.35);
+}
+
+/* ── Submit Button ── */
+.cm-submit-btn {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    background: linear-gradient(135deg, #D4A017, #e6b83a);
+    color: #000;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cm-submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(212, 160, 23, 0.4);
+}
+
+.cm-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Spinner */
+.cm-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: cm-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes cm-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Modal Box ── */
+.custom-meal-modal::-webkit-scrollbar { width: 4px; }
+.custom-meal-modal::-webkit-scrollbar-track { background: transparent; }
+.custom-meal-modal::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.3); border-radius: 4px; }
+
+/* ── Header ── */
+.cm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 28px 0;
+    gap: 16px;
+}
+
+.cm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cm-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: #D4A017;
+    color: #000;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.cm-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px;
+    line-height: 1.2;
+}
+
+.cm-header p {
+    font-size: 0.85rem;
+    color: #999;
+    margin: 0;
+}
+
+.cm-close {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #aaa;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.cm-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* ── Divider ── */
+.cm-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.07);
+    margin: 22px 0 0;
+}
+
+/* ── Body ── */
+.cm-body {
+    padding: 22px 28px;
+}
+
+.cm-subtitle {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+
+.cm-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cm-item-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cm-item-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #D4A017;
+    letter-spacing: 0.5px;
+    min-width: 48px;
+    flex-shrink: 0;
+}
+
+.cm-item-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 0.92rem;
+    color: #fff;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.cm-item-input::placeholder {
+    color: #555;
+}
+
+.cm-item-input:focus {
+    border-color: rgba(212, 160, 23, 0.5);
+    background: rgba(212, 160, 23, 0.04);
+}
+
+/* ── Footer ── */
+.cm-footer {
+    padding: 22px 28px 28px;
+    text-align: center;
+}
+
+.cm-footer-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 16px;
+}
+
+.cm-cta-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.cm-btn-whatsapp,
+.cm-btn-call {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 24px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.cm-btn-whatsapp {
+    background: #25D366;
+    color: #000;
+    flex: 1;
+}
+
+.cm-btn-whatsapp:hover {
+    background: #1ebe5a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+}
+
+.cm-btn-call {
+    background: #D4A017;
+    color: #000;
+    flex: 1;
+}
+
+.cm-btn-call:hover {
+    background: #e6b020;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 160, 23, 0.35);
+}
+
+.cm-phone-display {
+    margin: 14px 0 0;
+    font-size: 0.82rem;
+    color: #666;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+    .cm-header { padding: 22px 20px 0; }
+    .cm-body   { padding: 18px 20px; }
+    .cm-footer { padding: 18px 20px 24px; }
+
+    .cm-cta-buttons {
+        flex-direction: column;
+    }
+
+    .cm-header h2 { font-size: 1.15rem; }
+}

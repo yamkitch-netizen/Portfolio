@@ -40,6 +40,11 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
   const [activeForm, setActiveForm] = useState(initialType || "subscription");
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Gate: user must fill details before accessing the form
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "" });
+  const [userErrors, setUserErrors] = useState({});
+
   // Form State - Daily Meal Subscription
   const [subscriptionForm, setSubscriptionForm] = useState({
     mealPreferences: {
@@ -99,8 +104,8 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       subtotal += price * qty;
     });
 
-    // Platform Fee & Tiered Delivery Charge
-    const platformFee = subtotal > 0 ? 15 : 0;
+    // Platform Fee always free & Tiered Delivery Charge
+    const platformFee = 0;
     let deliveryCharge = 0;
     if (subtotal > 0) {
       if (subtotal < 200) {
@@ -277,21 +282,28 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       })
       .join("");
 
-    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${cartKeys.length} items`;
+    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${userDetails.name}`;
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
-        <h2 style="color: #2ecc71; border-bottom: 2px solid #2ecc71; padding-bottom: 8px; margin-top: 0;">New Subscription Order Confirmed</h2>
-        <div style="margin: 15px 0;">
-          <h3 style="margin-bottom: 8px; color: #333;">Selected Menu Items:</h3>
-          ${cartItemsHtml}
-        </div>
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 24px; border-radius: 8px;">
+        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">🍽️ New Meal Subscription Order</h2>
+
+        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">CUSTOMER INFO</h3>
+        <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:6px;margin-bottom:20px;">
+          <tr><td style="padding:8px 12px;color:#888;width:100px;">Name</td><td style="padding:8px 12px;font-weight:600;">${userDetails.name}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
+        </table>
+
+        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">ORDER DETAILS</h3>
+        <div style="margin-bottom:12px;">${cartItemsHtml}</div>
         <p><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
+
         <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; font-size: 0.95em; color: #555;">
           <p style="margin: 4px 0;"><strong>Subtotal:</strong> ₹${pricing.subtotal.toFixed(2)}</p>
-          <p style="margin: 4px 0;"><strong>Platform Fee:</strong> ₹${pricing.platformFee.toFixed(2)}</p>
           <p style="margin: 4px 0;"><strong>Delivery Charge:</strong> ${pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge.toFixed(2)}`}</p>
         </div>
-        <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount Paid: ₹${pricing.totalPayable.toFixed(2)}</h3>
+        <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount: ₹${pricing.totalPayable.toFixed(2)}</h3>
         <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
         <p style="font-size: 0.85em; color: #777; margin-bottom: 0;">Sent from YAMKITCH Web Portal</p>
       </div>
@@ -331,15 +343,22 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       corporateForm.mealsNeeded.dinner && "Dinner"
     ].filter(Boolean).join(", ");
 
-    const emailSubject = `[YAMKITCH] New Catering & Quote Enquiry - ${corporateForm.name}`;
+    const emailSubject = `[YAMKITCH] New Catering & Quote Enquiry - ${corporateForm.name || userDetails.name}`;
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
-        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">New Event Catering Request</h2>
-        <p><strong>Contact Person:</strong> ${corporateForm.name}</p>
-        <p><strong>Email:</strong> ${corporateForm.email}</p>
-        <p><strong>Phone:</strong> ${corporateForm.phone}</p>
-        <p><strong>Company/Organisation:</strong> ${corporateForm.orgName}</p>
-        <p><strong>Program/Event Type:</strong> ${corporateForm.programType}</p>
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 24px; border-radius: 8px;">
+        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">🍽️ New Event Catering Request</h2>
+
+        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">CUSTOMER INFO</h3>
+        <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:6px;margin-bottom:20px;">
+          <tr><td style="padding:8px 12px;color:#888;width:120px;">Name</td><td style="padding:8px 12px;font-weight:600;">${userDetails.name}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
+        </table>
+
+        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">EVENT DETAILS</h3>
+        <p><strong>Organisation:</strong> ${corporateForm.orgName || "—"}</p>
+        <p><strong>Program / Event Type:</strong> ${corporateForm.programType}</p>
         <p><strong>Expected Guest Count:</strong> ${corporateForm.guestsCount}</p>
         <p><strong>Catering Style:</strong> ${corporateForm.serviceStyle}</p>
         <p><strong>Meals Required:</strong> ${requiredMeals || "None"}</p>
@@ -364,16 +383,93 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     }
   };
 
+  const handleUserChange = (field, value) => {
+    setUserDetails((prev) => ({ ...prev, [field]: value }));
+    if (userErrors[field]) setUserErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validateUser = () => {
+    const errs = {};
+    if (!userDetails.name.trim()) errs.name = "Name is required";
+    if (!userDetails.age.trim() || isNaN(userDetails.age) || +userDetails.age < 1)
+      errs.age = "Enter a valid age";
+    if (!userDetails.email.trim() || !/\S+@\S+\.\S+/.test(userDetails.email))
+      errs.email = "Enter a valid email";
+    if (!userDetails.phone.trim() || userDetails.phone.replace(/\D/g, "").length < 10)
+      errs.phone = "Enter a valid phone number";
+    return errs;
+  };
+
+  const handleUnlock = () => {
+    const errs = validateUser();
+    if (Object.keys(errs).length) { setUserErrors(errs); return; }
+    setIsUnlocked(true);
+  };
+
   if (!isOpen) return null;
 
+  const handleClose = () => {
+    setIsUnlocked(false);
+    setUserDetails({ name: "", age: "", email: "", phone: "" });
+    setUserErrors({});
+    onClose();
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Close Icon */}
-        <button className="modal-close-btn" onClick={onClose}>
+        <button className="modal-close-btn" onClick={handleClose}>
           <FaTimes />
         </button>
 
+        {/* ── Gate: User Details ── */}
+        {!isUnlocked && (
+          <div className="sm-gate-overlay">
+            <div className="sm-gate-icon">🔒</div>
+            <h2 className="sm-gate-title">Enter Your Details to Continue</h2>
+            <p className="sm-gate-subtitle">Fill in your info to unlock the subscription builder</p>
+            <div className="sm-gate-fields">
+              <div className="sm-gate-row">
+                <div className="sm-gate-field">
+                  <label htmlFor="sm-name">Full Name <span>*</span></label>
+                  <input id="sm-name" type="text" className={`sm-gate-input${userErrors.name ? " error" : ""}`}
+                    placeholder="e.g. Rahul Sharma" value={userDetails.name}
+                    onChange={(e) => handleUserChange("name", e.target.value)} />
+                  {userErrors.name && <span className="sm-gate-error">{userErrors.name}</span>}
+                </div>
+                <div className="sm-gate-field">
+                  <label htmlFor="sm-age">Age <span>*</span></label>
+                  <input id="sm-age" type="number" min="1" max="120" className={`sm-gate-input${userErrors.age ? " error" : ""}`}
+                    placeholder="e.g. 28" value={userDetails.age}
+                    onChange={(e) => handleUserChange("age", e.target.value)} />
+                  {userErrors.age && <span className="sm-gate-error">{userErrors.age}</span>}
+                </div>
+              </div>
+              <div className="sm-gate-field">
+                <label htmlFor="sm-email">Email Address <span>*</span></label>
+                <input id="sm-email" type="email" className={`sm-gate-input${userErrors.email ? " error" : ""}`}
+                  placeholder="e.g. rahul@gmail.com" value={userDetails.email}
+                  onChange={(e) => handleUserChange("email", e.target.value)} />
+                {userErrors.email && <span className="sm-gate-error">{userErrors.email}</span>}
+              </div>
+              <div className="sm-gate-field">
+                <label htmlFor="sm-phone">Phone Number <span>*</span></label>
+                <input id="sm-phone" type="tel" className={`sm-gate-input${userErrors.phone ? " error" : ""}`}
+                  placeholder="e.g. +91 98765 43210" value={userDetails.phone}
+                  onChange={(e) => handleUserChange("phone", e.target.value)} />
+                {userErrors.phone && <span className="sm-gate-error">{userErrors.phone}</span>}
+              </div>
+            </div>
+            <button className="sm-gate-unlock-btn" onClick={handleUnlock}>
+              🔓 Unlock Subscription Builder
+            </button>
+          </div>
+        )}
+
+        {/* Content only shown after unlocking */}
+        {isUnlocked && (
+          <>
         {/* Tab Selector Header (Only shown when not in success view) */}
         {!isSuccess && (
           <div className="capsule-toggle" style={{ margin: "20px 45px 0 45px", width: "calc(100% - 90px)" }}>
@@ -882,17 +978,9 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                     </div>
                     <div className="receipt-divider"></div>
 
-                    {/* Platform & Delivery */}
+                    {/* Delivery Charges */}
                     <div className="receipt-item">
-                      <span>Platform & Delivery Charges</span>
-                      <span>Summary</span>
-                    </div>
-                    <div className="receipt-item sub-item">
-                      <span>- Fixed Platform Fee</span>
-                      <span>₹{pricing.platformFee}</span>
-                    </div>
-                    <div className="receipt-item sub-item">
-                      <span>- Delivery Charge</span>
+                      <span>Delivery Charge</span>
                       <span>{pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge}`}</span>
                     </div>
 
@@ -946,6 +1034,8 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
               )}
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

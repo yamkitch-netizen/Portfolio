@@ -15,7 +15,7 @@ const TripuraVideo = () => {
       {/* Video Container */}
       <div className="video-container">
         <video
-          src="/Earth_zooming_to_Tripura_map_202607071130.mp4"
+          src="/Earth_zooming_into_Tripura_1080p_202607071225.mp4"
           autoPlay
           muted
           loop

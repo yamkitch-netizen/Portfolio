@@ -4,12 +4,14 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaUtensils, FaBuilding, FaArrowRight } from "react-icons/fa";
 import SubscriptionModal from "../SubscriptionModal/SubscriptionModal";
+import CustomMealModal from "../CustomMealModal/CustomMealModal";
 import "./WaysToBring.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const WaysToBring = ({ openModal }) => {
   const containerRef = useRef();
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   useGSAP(() => {
     const container = containerRef.current;
@@ -83,7 +85,7 @@ const WaysToBring = ({ openModal }) => {
           </div>
 
           {/* Card 2: Party & function Family & Corporate */}
-          <div className="ways-card" onClick={() => window.location.hash = "/corporate"}>
+          <div className="ways-card" onClick={() => setIsCustomModalOpen(true)}>
             <div className="ways-icon-wrap">
               <FaBuilding />
             </div>
@@ -94,10 +96,12 @@ const WaysToBring = ({ openModal }) => {
               housewarming ceremonies and premium event catering.
             </p>
             <a 
-              href="#/corporate" 
+              href="#"
               className="ways-link"
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
+                setIsCustomModalOpen(true);
               }}
             >
               Get Started <FaArrowRight className="link-arrow" />
@@ -105,6 +109,12 @@ const WaysToBring = ({ openModal }) => {
           </div>
         </div>
       </div>
+
+      {/* Custom Meal Modal */}
+      <CustomMealModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+      />
 
     </section>
   );
