@@ -25,6 +25,8 @@
     object-fit: cover;
     opacity: 0.85; /* Increased opacity for high visibility */
     display: block;
+    transform: scale(1.16);
+    transform-origin: center top;
 }
 
 .tripura-video-section .video-overlay {
@@ -57,7 +59,7 @@
     bottom: -1px;
     left: 0;
     width: 100%;
-    height: 110px;
+    height: 160px;
     z-index: 3;
 }
 
@@ -73,7 +75,11 @@
         min-height: 480px;
     }
     
-    .video-curve-top, .video-curve-bottom {
+    .video-curve-top {
         height: 45px;
+    }
+    
+    .video-curve-bottom {
+        height: 90px;
     }
 }
