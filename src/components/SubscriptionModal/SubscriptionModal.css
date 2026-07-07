@@ -148,7 +148,8 @@
     border-radius: 28px;
     width: min(1100px, 95vw);
     max-height: 90vh;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
     box-shadow: 
         0 25px 50px -12px rgba(0, 0, 0, 0.55),
         0 0 40px rgba(212, 160, 23, 0.06);
@@ -1021,4 +1022,212 @@
     color: white;
     min-width: 16px;
     text-align: center;
+}
+
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVE — Subscription Modal
+   ════════════════════════════════════════ */
+
+/* Tablet: collapse two-column grid */
+@media (max-width: 860px) {
+    .modal-container {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px;
+        max-height: 95vh;
+    }
+
+    /* Stack form + receipt vertically */
+    .modal-grid {
+        grid-template-columns: 1fr;
+        min-height: unset;
+    }
+
+    /* Remove side border — now it's top/bottom */
+    .modal-form-area {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 30px 24px;
+    }
+
+    .modal-form-area h2 {
+        font-size: 1.7rem;
+    }
+
+    /* Order summary comes below form on mobile */
+    .modal-summary-panel {
+        padding: 28px 24px;
+    }
+
+    /* Capsule toggle */
+    .capsule-toggle {
+        margin: 16px 20px 0 !important;
+        width: calc(100% - 40px) !important;
+    }
+
+    .toggle-option {
+        font-size: 0.78rem;
+        padding: 10px 8px;
+    }
+
+    /* Success screen */
+    .modal-success-state {
+        padding: 40px 24px;
+    }
+
+    /* Gate overlay */
+    .sm-gate-overlay {
+        padding: 30px 24px;
+    }
+
+    .sm-gate-title {
+        font-size: 1.25rem;
+    }
+
+    .sm-gate-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile: tighter adjustments */
+@media (max-width: 540px) {
+    .modal-backdrop {
+        padding: 10px;
+        align-items: flex-end;
+    }
+
+    .modal-container {
+        border-radius: 24px 24px 16px 16px;
+        max-height: 92vh;
+    }
+
+    .modal-close-btn {
+        top: 16px;
+        right: 16px;
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    /* Form area */
+    .modal-form-area {
+        padding: 24px 18px;
+    }
+
+    .modal-form-area h2 {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+
+    .modal-form-area .sub-title {
+        font-size: 0.75rem;
+        margin-bottom: 20px;
+    }
+
+    /* Order summary */
+    .modal-summary-panel {
+        padding: 22px 18px;
+    }
+
+    .modal-summary-panel h3 {
+        font-size: 1rem;
+    }
+
+    /* Capsule toggle */
+    .capsule-toggle {
+        margin: 14px 16px 0 !important;
+        width: calc(100% - 32px) !important;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .toggle-option {
+        font-size: 0.72rem;
+        padding: 9px 6px;
+        border-radius: 9px;
+    }
+
+    /* Preference cards */
+    .preference-grid {
+        gap: 8px;
+    }
+
+    .preference-card {
+        padding: 12px 10px;
+        font-size: 0.82rem;
+    }
+
+    /* Menu cards */
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-card {
+        padding: 12px;
+    }
+
+    .menu-card-title {
+        font-size: 0.85rem;
+    }
+
+    /* Form inputs */
+    .custom-input,
+    .custom-select-wrap select {
+        padding: 12px 14px;
+        font-size: 0.88rem;
+    }
+
+    /* Receipt rows */
+    .receipt-item {
+        font-size: 0.85rem;
+    }
+
+    .receipt-total .final-amount {
+        font-size: 1.5rem;
+    }
+
+    /* Checkout button */
+    .checkout-btn {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+
+    /* Success state */
+    .modal-success-state {
+        padding: 30px 18px;
+    }
+
+    .modal-success-state h2 {
+        font-size: 1.4rem;
+    }
+
+    .success-icon-wrap {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+
+    /* Gate */
+    .sm-gate-overlay {
+        padding: 24px 18px;
+    }
+
+    .sm-gate-title {
+        font-size: 1.1rem;
+    }
+
+    .sm-gate-subtitle {
+        font-size: 0.82rem;
+        margin-bottom: 20px;
+    }
+
+    .sm-gate-unlock-btn {
+        padding: 13px;
+        font-size: 0.92rem;
+    }
+
+    /* Corporate two-column grid */
+    .corp-form-grid {
+        grid-template-columns: 1fr !important;
+    }
 }

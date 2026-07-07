@@ -1,10 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaTimes, FaPhoneAlt, FaUtensils, FaCheckCircle, FaPaperPlane, FaUser, FaLock, FaUnlock } from "react-icons/fa";
 import "./CustomMealModal.css";
 
 const PHONE_NUMBER = "+916033550539";
 
 const CustomMealModal = ({ isOpen, onClose }) => {
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   // Step 1: user details  |  Step 2: food items
   const [step, setStep] = useState(1);
   const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "" });
