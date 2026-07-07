@@ -90,7 +90,7 @@ const WaysToBring = () => {
           </div>
 
           {/* Card 2: Corporate & Family Programs */}
-          <div className="ways-card" onClick={() => openModal("corporate")}>
+          <div className="ways-card" onClick={() => window.location.hash = "/corporate"}>
             <div className="ways-icon-wrap">
               <FaBuilding />
             </div>
@@ -101,12 +101,10 @@ const WaysToBring = () => {
               housewarming ceremonies and premium event catering.
             </p>
             <a 
-              href="#" 
+              href="#/corporate" 
               className="ways-link"
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
-                openModal("corporate");
               }}
             >
               Get Started <FaArrowRight className="link-arrow" />

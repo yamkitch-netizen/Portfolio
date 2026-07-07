@@ -2,18 +2,20 @@ import { useState } from "react";
 import { FaBars, FaTimes, FaFacebookF, FaInstagram } from "react-icons/fa";
 import "./Navbar.css";
 
-const Navbar = () => {
+const Navbar = ({ currentPath }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  const isCorporateActive = currentPath === "#/corporate" || currentPath === "#corporate";
+
   return (
     <header className="navbar">
       <div className="container navbar-container">
 
-        <a href="/" className="logo">
+        <a href="#/" className="logo" onClick={() => setIsOpen(false)}>
           <img 
             src="/WhatsApp_Image_2026-07-05_at_21.14.02-removebg-preview.png" 
             alt="YAMKITCH Logo"
@@ -28,12 +30,43 @@ const Navbar = () => {
         {/* Nav Link Menu */}
         <nav className={`nav-menu ${isOpen ? "active" : ""}`}>
           <ul className="nav-links">
-            <li><a href="#" onClick={() => setIsOpen(false)}>Home</a></li>
-            <li><a href="#" onClick={() => setIsOpen(false)}>Services</a></li>
-            <li><a href="#" onClick={() => setIsOpen(false)}>Corporate</a></li>
-            <li><a href="#" onClick={() => setIsOpen(false)}>Gallery</a></li>
-            <li><a href="#" onClick={() => setIsOpen(false)}>About</a></li>
-            <li><a href="#" onClick={() => setIsOpen(false)}>Contact</a></li>
+            <li>
+              <a 
+                href="#/" 
+                className={!isCorporateActive ? "active-link" : ""} 
+                onClick={() => setIsOpen(false)}
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#/corporate" 
+                onClick={(e) => {
+                  setIsOpen(false);
+                  e.preventDefault();
+                  window.location.hash = "#/corporate";
+                  setTimeout(() => {
+                    const el = document.getElementById("services");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }, 150);
+                }}
+              >
+                Services
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#/corporate" 
+                className={isCorporateActive ? "active-link" : ""} 
+                onClick={() => setIsOpen(false)}
+              >
+                Corporate
+              </a>
+            </li>
+            <li><a href="#/" onClick={() => setIsOpen(false)}>Gallery</a></li>
+            <li><a href="#/" onClick={() => setIsOpen(false)}>About</a></li>
+            <li><a href="#/" onClick={() => setIsOpen(false)}>Contact</a></li>
           </ul>
           
           <div className="nav-socials mobile-socials">

@@ -107,7 +107,7 @@ const OfferStory = () => {
   }, { scope: sectionRef });
 
   return (
-    <section className="offer-story" ref={sectionRef}>
+    <section className="offer-story" ref={sectionRef} id="services">
       {/* Background */}
       <div className="offer-bg">
         <img

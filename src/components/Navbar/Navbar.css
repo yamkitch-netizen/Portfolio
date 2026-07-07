@@ -90,6 +90,14 @@
     width:100%;
 }
 
+.nav-links a.active-link{
+    color:#D4A017;
+}
+
+.nav-links a.active-link::after{
+    width:100%;
+}
+
 .quote-btn{
 
     background:#D4A017;
