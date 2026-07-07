@@ -4,13 +4,16 @@ import "./SubscriptionModal.css";
 
 // Menu items defined as per user specification
 const breakfastMenu = [
-  { name: "Plain Roti (with Ata)", price: 7, desc: "Moderate size" },
-  { name: "Plain Puri (with Ata)", price: 7, desc: "Moderate size" },
-  { name: "Vegetable Curry/Sabji", price: 19, desc: "Aloo Dum / Mixed Vegetables" },
-  { name: "Bread with Jam & Butter", price: 19, desc: "4 bread with butter (Grilled/non-grilled)" },
-  { name: "Boiled Egg", price: 12, desc: "Chicken" },
-  { name: "Egg Maggi (with Butter)", price: 59, desc: "Maggi with extra butter" },
-  { name: "Green Salad", price: 59, desc: "Fresh lettuce, carrot, cucumber with dressing" },
+  { name: "Roti + Sabji", price: 26, desc: "3 Roti + Aloo Dum / Mixed Vegetables" },
+  { name: "Puri + Sabji", price: 26, desc: "4 Puri + Aloo Dum / Mixed Vegetables" },
+  { name: "Roti + Tadka", price: 37, desc: "3 Roti + Egg Tadka" },
+  { name: "Puri + Tadka", price: 37, desc: "4 Puri + Egg Tadka" },
+  { name: "Plain Maggi", price: 40, desc: "Plain Maggi with butter" },
+  { name: "Egg Maggi", price: 59, desc: "Egg Maggi with butter" },
+  { name: "Half Boiled Omelette", price: 15, desc: "Soft-runny omelette" },
+  { name: "Half Boiled Egg", price: 12, desc: "1 soft-boiled egg" },
+  { name: "Proper Boiled Omelette", price: 15, desc: "Fully cooked omelette" },
+  { name: "Salad", price: 59, desc: "Fresh green salad" },
 ];
 
 const lunchDinnerMenu = [
@@ -35,6 +38,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       lunch: false,
       dinner: false,
     },
+    plates: 1, // Number of plates ordered
     paymentMethod: "razorpay",
   });
 
@@ -72,7 +76,8 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   // Pricing calculations
   const calculatePricing = () => {
-    const { menuItems } = subscriptionForm;
+    const { menuItems, plates } = subscriptionForm;
+    const numPlates = parseInt(plates) || 1;
 
     // Daily base is the sum of prices of selected items
     const availableItems = getAvailableMenuItems();
@@ -82,7 +87,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       if (item) dailyBase += item.price;
     });
 
-    const subtotal = dailyBase;
+    const subtotal = dailyBase * numPlates;
 
     // Platform Fee & GST (5%)
     const platformFee = subtotal > 0 ? 15 : 0;
@@ -91,6 +96,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
     return {
       dailyBase,
+      plates: numPlates,
       days: 1,
       subtotal,
       platformFee,
@@ -127,18 +133,17 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
         items.some((item) => item.name === itemName)
       );
 
-      // Rule 1: If Breakfast is checked, ensure exactly one of Roti or Puri is selected
+      // Rule 1: If Breakfast is checked, ensure exactly one of the 4 combo options is selected
       if (updatedPrefs.breakfast) {
-        const hasRoti = newMenuItems.includes("Plain Roti (with Ata)");
-        const hasPuri = newMenuItems.includes("Plain Puri (with Ata)");
-        if (!hasRoti && !hasPuri) {
-          newMenuItems.push("Plain Roti (with Ata)"); // Default to Roti
+        const combos = ["Roti + Sabji", "Puri + Sabji", "Roti + Tadka", "Puri + Tadka"];
+        const hasComboSelected = newMenuItems.some((name) => combos.includes(name));
+        if (!hasComboSelected) {
+          newMenuItems.push("Roti + Sabji"); // Default to Roti + Sabji
         }
       } else {
-        // If Breakfast is unchecked, clear Roti & Puri from selections
-        newMenuItems = newMenuItems.filter(
-          (name) => name !== "Plain Roti (with Ata)" && name !== "Plain Puri (with Ata)"
-        );
+        // If Breakfast is unchecked, remove all breakfast items from selections
+        const breakfastItemNames = breakfastMenu.map((item) => item.name);
+        newMenuItems = newMenuItems.filter((name) => !breakfastItemNames.includes(name));
       }
 
       // Rule 2: If Lunch or Dinner is checked, ensure Plain Meal is selected
@@ -166,29 +171,19 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       return; // Do nothing
     }
 
-    // Rule: Roti & Puri are mutually exclusive and at least one must be selected
-    if (itemName === "Plain Roti (with Ata)") {
+    // Rule: Breakfast Combos are mutually exclusive and exactly one must be selected
+    const combos = ["Roti + Sabji", "Puri + Sabji", "Roti + Tadka", "Puri + Tadka"];
+    if (combos.includes(itemName)) {
       setSubscriptionForm((prev) => {
-        if (prev.menuItems.includes("Plain Roti (with Ata)")) return prev; // Cannot deselect both
-        return {
-          ...prev,
-          menuItems: [
-            ...prev.menuItems.filter((name) => name !== "Plain Puri (with Ata)"),
-            "Plain Roti (with Ata)",
-          ],
-        };
-      });
-      return;
-    }
+        // If it's already selected, it cannot be deselected
+        if (prev.menuItems.includes(itemName)) return prev;
 
-    if (itemName === "Plain Puri (with Ata)") {
-      setSubscriptionForm((prev) => {
-        if (prev.menuItems.includes("Plain Puri (with Ata)")) return prev; // Cannot deselect both
+        // Deselect any other combos and select this one
         return {
           ...prev,
           menuItems: [
-            ...prev.menuItems.filter((name) => name !== "Plain Roti (with Ata)"),
-            "Plain Puri (with Ata)",
+            ...prev.menuItems.filter((name) => !combos.includes(name)),
+            itemName,
           ],
         };
       });
@@ -206,16 +201,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
         menuItems: updatedItems,
       };
     });
-  };
-
-  const handleSubAddonChange = (addon) => {
-    setSubscriptionForm((prev) => ({
-      ...prev,
-      addOns: {
-        ...prev.addOns,
-        [addon]: !prev.addOns[addon],
-      },
-    }));
   };
 
   const handleCorpFormChange = (key, value) => {
@@ -242,6 +227,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     setSummaryData({
       type: "subscription",
       title: subscriptionForm.menuItems.join(", "),
+      plates: subscriptionForm.plates,
       amount: pricing.totalPayable.toFixed(2),
     });
     setIsSuccess(true);
@@ -257,6 +243,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
         <h2 style="color: #2ecc71; border-bottom: 2px solid #2ecc71; padding-bottom: 8px; margin-top: 0;">New Subscription Order Confirmed</h2>
         <p><strong>Selected Menu Items:</strong> ${subscriptionForm.menuItems.join(", ")}</p>
+        <p><strong>Number of Plates:</strong> ${subscriptionForm.plates}</p>
         <p><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
         <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount Paid: ₹${pricing.totalPayable.toFixed(2)}</h3>
         <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
@@ -381,6 +368,10 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                     <span>Selected Menu Items</span>
                     <span>{summaryData.title}</span>
                   </div>
+                  <div className="success-summary-item">
+                    <span>Number of Plates</span>
+                    <span>{summaryData.plates}</span>
+                  </div>
                   <div className="success-summary-item" style={{ borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "12px", marginTop: "12px" }}>
                     <span>Amount Paid</span>
                     <span style={{ color: "#D4A017", fontWeight: "700" }}>₹{summaryData.amount}</span>
@@ -501,7 +492,24 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                       {isMenuUnlocked ? "Select one or more dishes from the menu" : "Menu will unlock once a preference is selected"}
                     </span>
                   </div>
-
+                  {/* Number of Plates */}
+                  <div className="form-group-wrapper" style={{ marginTop: "20px" }}>
+                    <label className="form-section-title">
+                      Number of Plates<span>*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className="custom-input"
+                      value={subscriptionForm.plates}
+                      onChange={(e) => {
+                        const val = Math.max(1, parseInt(e.target.value) || 1);
+                        handleSubFormChange("plates", val);
+                      }}
+                      min="1"
+                      required
+                    />
+                    <span className="form-description">Enter the number of plates required daily</span>
+                  </div>
                 </form>
               ) : (
                 /* CORPORATE / EVENT CATERING INQUIRY FORM */
@@ -698,6 +706,12 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                       </span>
                     </div>
 
+                    {/* Number of Plates */}
+                    <div className="receipt-item">
+                      <span>Number of Plates</span>
+                      <span style={{ fontWeight: "600", color: "white" }}>{subscriptionForm.plates}</span>
+                    </div>
+
                     {/* Active Meals list */}
                     <div className="receipt-item sub-item">
                       <span>
@@ -710,7 +724,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                           .filter(Boolean)
                           .join(" + ") || "None Selected"}
                       </span>
-                      <span>₹{pricing.dailyBase}/day</span>
+                      <span>₹{(pricing.dailyBase * subscriptionForm.plates).toFixed(2)}/day</span>
                     </div>
                     <div className="receipt-divider"></div>
 
