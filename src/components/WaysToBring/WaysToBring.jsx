@@ -70,7 +70,7 @@ const WaysToBring = () => {
             <div className="ways-icon-wrap">
               <FaUtensils />
             </div>
-            <h3>Daily Meal Subscription</h3>
+            <h3>Daily regular corporate meal</h3>
             <p>
               Fresh, healthy & hygienic breakfast, lunch and dinner delivered 
               every day for individuals, families and working professionals 
@@ -89,12 +89,12 @@ const WaysToBring = () => {
             </a>
           </div>
 
-          {/* Card 2: Corporate & Family Programs */}
+          {/* Card 2: Party & function Family & Corporate */}
           <div className="ways-card" onClick={() => window.location.hash = "/corporate"}>
             <div className="ways-icon-wrap">
               <FaBuilding />
             </div>
-            <h3>Corporate & Family Programs</h3>
+            <h3>Party & function Family & Corporate</h3>
             <p>
               Customized meal solutions for offices, employee meal 
               programs, family functions, birthdays, anniversaries, 

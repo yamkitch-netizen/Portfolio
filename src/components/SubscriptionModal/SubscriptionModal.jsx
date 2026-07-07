@@ -4,26 +4,36 @@ import "./SubscriptionModal.css";
 
 // Menu items defined as per user specification
 const breakfastMenu = [
-  { name: "Roti + Sabji", price: 26, desc: "3 Roti + Aloo Dum / Mixed Vegetables" },
-  { name: "Puri + Sabji", price: 26, desc: "4 Puri + Aloo Dum / Mixed Vegetables" },
-  { name: "Roti + Tadka", price: 37, desc: "3 Roti + Egg Tadka" },
-  { name: "Puri + Tadka", price: 37, desc: "4 Puri + Egg Tadka" },
-  { name: "Plain Maggi", price: 40, desc: "Plain Maggi with butter" },
-  { name: "Egg Maggi", price: 59, desc: "Egg Maggi with butter" },
-  { name: "Half Boiled Omelette", price: 15, desc: "Soft-runny omelette" },
-  { name: "Half Boiled Egg", price: 12, desc: "1 soft-boiled egg" },
-  { name: "Proper Boiled Omelette", price: 15, desc: "Fully cooked omelette" },
-  { name: "Salad", price: 59, desc: "Fresh green salad" },
+  { name: "Roti + Sabji", price: 26, desc: "3 Roti + Aloo Dum / Mixed Vegetables", isBase: true },
+  { name: "Puri + Sabji", price: 26, desc: "4 Puri + Aloo Dum / Mixed Vegetables", isBase: true },
+  { name: "Roti + Tadka", price: 37, desc: "3 Roti + Egg Tadka", isBase: true },
+  { name: "Puri + Tadka", price: 37, desc: "4 Puri + Egg Tadka", isBase: true },
+  { name: "Plain Maggi", price: 40, desc: "Plain Maggi with butter", isBase: false },
+  { name: "Egg Maggi", price: 59, desc: "Egg Maggi with butter", isBase: false },
+  { name: "Half Boiled Omelette", price: 15, desc: "Soft-runny omelette", isBase: false },
+  { name: "Half Boiled Egg", price: 12, desc: "1 soft-boiled egg", isBase: false },
+  { name: "Proper Boiled Omelette", price: 15, desc: "Fully cooked omelette", isBase: false },
+  { name: "Salad", price: 59, desc: "Fresh green salad", isBase: false },
 ];
 
-const lunchDinnerMenu = [
-  { name: "Plain Meal", price: 59, desc: "Plain Rice + Dal + Vegetable Fry" },
-  { name: "Mixed / Seasonal Vegetables", price: 19, desc: "Aloo Dum / Mixed Vegetables & others" },
-  { name: "Omelette", price: 15, desc: "Chicken" },
-  { name: "Egg Tadka", price: 30, desc: "Chicken" },
-  { name: "Chicken Curry", price: 59, desc: "with Butter (4 Pieces + 1 Potato)" },
-  { name: "Paneer Curry", price: 59, desc: "Paneer with butter gravy" },
-  { name: "Chicken Dum Biryani", price: 119, desc: "(1 Chicken Piece + 1 Potato + 1 Boiled Egg)" },
+const lunchMenu = [
+  { name: "Plain Meal (Lunch)", price: 59, desc: "Plain Rice + Dal + Vegetable Fry", isBase: true },
+  { name: "Mixed / Seasonal Vegetables (Lunch)", price: 19, desc: "Aloo Dum / Mixed Vegetables & others", isBase: false },
+  { name: "Omelette (Lunch)", price: 15, desc: "Chicken", isBase: false },
+  { name: "Egg Tadka (Lunch)", price: 30, desc: "Chicken", isBase: false },
+  { name: "Chicken Curry (Lunch)", price: 59, desc: "with Butter (4 Pieces + 1 Potato)", isBase: false },
+  { name: "Paneer Curry (Lunch)", price: 59, desc: "Paneer with butter gravy", isBase: false },
+  { name: "Chicken Dum Biryani (Lunch)", price: 119, desc: "(1 Chicken Piece + 1 Potato + 1 Boiled Egg)", isBase: false },
+];
+
+const dinnerMenu = [
+  { name: "Plain Meal (Dinner)", price: 59, desc: "Plain Rice + Dal + Vegetable Fry", isBase: true },
+  { name: "Mixed / Seasonal Vegetables (Dinner)", price: 19, desc: "Aloo Dum / Mixed Vegetables & others", isBase: false },
+  { name: "Omelette (Dinner)", price: 15, desc: "Chicken", isBase: false },
+  { name: "Egg Tadka (Dinner)", price: 30, desc: "Chicken", isBase: false },
+  { name: "Chicken Curry (Dinner)", price: 59, desc: "with Butter (4 Pieces + 1 Potato)", isBase: false },
+  { name: "Paneer Curry (Dinner)", price: 59, desc: "Paneer with butter gravy", isBase: false },
+  { name: "Chicken Dum Biryani (Dinner)", price: 119, desc: "(1 Chicken Piece + 1 Potato + 1 Boiled Egg)", isBase: false },
 ];
 
 const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
@@ -32,13 +42,12 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   // Form State - Daily Meal Subscription
   const [subscriptionForm, setSubscriptionForm] = useState({
-    menuItems: [], // Selected items from menu
     mealPreferences: {
       breakfast: false,
       lunch: false,
       dinner: false,
     },
-    plates: 1, // Number of plates ordered
+    cart: {}, // e.g., { "breakfast_Roti + Sabji": 1, "lunch_Plain Meal (Lunch)": 1 }
     paymentMethod: "razorpay",
   });
 
@@ -62,32 +71,33 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
   // Success summary details
   const [summaryData, setSummaryData] = useState(null);
 
-  // Helper to fetch unlocked menu options
-  const getAvailableMenuItems = () => {
-    let items = [];
-    if (subscriptionForm.mealPreferences.breakfast) {
-      items = [...items, ...breakfastMenu];
-    }
-    if (subscriptionForm.mealPreferences.lunch || subscriptionForm.mealPreferences.dinner) {
-      items = [...items, ...lunchDinnerMenu];
-    }
-    return items;
-  };
-
   // Pricing calculations
   const calculatePricing = () => {
-    const { menuItems, plates } = subscriptionForm;
-    const numPlates = parseInt(plates) || 1;
+    const { cart } = subscriptionForm;
+    let subtotal = 0;
 
-    // Daily base is the sum of prices of selected items
-    const availableItems = getAvailableMenuItems();
-    let dailyBase = 0;
-    menuItems.forEach((itemName) => {
-      const item = availableItems.find((i) => i.name === itemName);
-      if (item) dailyBase += item.price;
+    const findItemPrice = (key) => {
+      const name = key.split("_")[1];
+      if (key.startsWith("breakfast_")) {
+        const found = breakfastMenu.find((i) => i.name === name);
+        return found ? found.price : 0;
+      }
+      if (key.startsWith("lunch_")) {
+        const found = lunchMenu.find((i) => i.name === name);
+        return found ? found.price : 0;
+      }
+      if (key.startsWith("dinner_")) {
+        const found = dinnerMenu.find((i) => i.name === name);
+        return found ? found.price : 0;
+      }
+      return 0;
+    };
+
+    Object.keys(cart).forEach((key) => {
+      const qty = cart[key] || 0;
+      const price = findItemPrice(key);
+      subtotal += price * qty;
     });
-
-    const subtotal = dailyBase * numPlates;
 
     // Platform Fee & GST (5%)
     const platformFee = subtotal > 0 ? 15 : 0;
@@ -95,9 +105,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     const totalPayable = subtotal + platformFee + gst;
 
     return {
-      dailyBase,
-      plates: numPlates,
-      days: 1,
       subtotal,
       platformFee,
       gst,
@@ -119,86 +126,88 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
         [pref]: !prev.mealPreferences[pref],
       };
 
-      // Determine new available items
-      let items = [];
-      if (updatedPrefs.breakfast) {
-        items = [...items, ...breakfastMenu];
-      }
-      if (updatedPrefs.lunch || updatedPrefs.dinner) {
-        items = [...items, ...lunchDinnerMenu];
-      }
+      const newCart = { ...prev.cart };
 
-      // Filter out items that are no longer available
-      let newMenuItems = prev.menuItems.filter((itemName) =>
-        items.some((item) => item.name === itemName)
-      );
-
-      // Rule 1: If Breakfast is checked, ensure exactly one of the 4 combo options is selected
       if (updatedPrefs.breakfast) {
-        const combos = ["Roti + Sabji", "Puri + Sabji", "Roti + Tadka", "Puri + Tadka"];
-        const hasComboSelected = newMenuItems.some((name) => combos.includes(name));
-        if (!hasComboSelected) {
-          newMenuItems.push("Roti + Sabji"); // Default to Roti + Sabji
+        if (!(newCart["breakfast_Roti + Sabji"] > 0)) {
+          newCart["breakfast_Roti + Sabji"] = 1;
         }
       } else {
-        // If Breakfast is unchecked, remove all breakfast items from selections
-        const breakfastItemNames = breakfastMenu.map((item) => item.name);
-        newMenuItems = newMenuItems.filter((name) => !breakfastItemNames.includes(name));
+        Object.keys(newCart).forEach((key) => {
+          if (key.startsWith("breakfast_")) delete newCart[key];
+        });
       }
 
-      // Rule 2: If Lunch or Dinner is checked, ensure Plain Meal is selected
-      const hasLunchOrDinner = updatedPrefs.lunch || updatedPrefs.dinner;
-      if (hasLunchOrDinner) {
-        if (!newMenuItems.includes("Plain Meal")) {
-          newMenuItems.push("Plain Meal");
+      if (updatedPrefs.lunch) {
+        if (!(newCart["lunch_Plain Meal (Lunch)"] > 0)) {
+          newCart["lunch_Plain Meal (Lunch)"] = 1;
         }
       } else {
-        // If both are unchecked, remove Plain Meal from selections
-        newMenuItems = newMenuItems.filter((name) => name !== "Plain Meal");
+        Object.keys(newCart).forEach((key) => {
+          if (key.startsWith("lunch_")) delete newCart[key];
+        });
+      }
+
+      if (updatedPrefs.dinner) {
+        if (!(newCart["dinner_Plain Meal (Dinner)"] > 0)) {
+          newCart["dinner_Plain Meal (Dinner)"] = 1;
+        }
+      } else {
+        Object.keys(newCart).forEach((key) => {
+          if (key.startsWith("dinner_")) delete newCart[key];
+        });
       }
 
       return {
         ...prev,
         mealPreferences: updatedPrefs,
-        menuItems: newMenuItems,
+        cart: newCart,
       };
     });
   };
 
-  const handleMenuItemToggle = (itemName) => {
-    // Rule: Plain Meal is mandatory and cannot be deselected
-    if (itemName === "Plain Meal") {
-      return; // Do nothing
-    }
-
-    // Rule: Breakfast Combos are mutually exclusive and exactly one must be selected
-    const combos = ["Roti + Sabji", "Puri + Sabji", "Roti + Tadka", "Puri + Tadka"];
-    if (combos.includes(itemName)) {
-      setSubscriptionForm((prev) => {
-        // If it's already selected, it cannot be deselected
-        if (prev.menuItems.includes(itemName)) return prev;
-
-        // Deselect any other combos and select this one
-        return {
-          ...prev,
-          menuItems: [
-            ...prev.menuItems.filter((name) => !combos.includes(name)),
-            itemName,
-          ],
-        };
-      });
-      return;
-    }
-
-    // Standard toggle for optional items (add-ons)
+  const updateCartQty = (key, delta) => {
     setSubscriptionForm((prev) => {
-      const isSelected = prev.menuItems.includes(itemName);
-      const updatedItems = isSelected
-        ? prev.menuItems.filter((name) => name !== itemName)
-        : [...prev.menuItems, itemName];
+      const currentQty = prev.cart[key] || 0;
+      const newQty = Math.max(0, currentQty + delta);
+
+      const name = key.split("_")[1];
+      const combos = ["Roti + Sabji", "Puri + Sabji", "Roti + Tadka", "Puri + Tadka"];
+      let newCart = {
+        ...prev.cart,
+        [key]: newQty,
+      };
+
+      if (key.startsWith("breakfast_") && combos.includes(name) && delta > 0) {
+        // Enforce mutual exclusivity among breakfast combos
+        combos.forEach((comboName) => {
+          const comboKey = `breakfast_${comboName}`;
+          if (comboKey !== key) {
+            newCart[comboKey] = 0;
+          }
+        });
+        newCart[key] = newQty;
+      }
+
+      if (key.startsWith("breakfast_") && combos.includes(name) && newQty < 1 && delta < 0) {
+        const otherCombosQty = combos
+          .filter((c) => c !== name)
+          .reduce((acc, c) => acc + (newCart[`breakfast_${c}`] || 0), 0);
+        if (otherCombosQty === 0) {
+          newCart[key] = 1;
+        }
+      }
+
+      if (key === "lunch_Plain Meal (Lunch)" && newQty < 1 && delta < 0) {
+        newCart[key] = 1;
+      }
+      if (key === "dinner_Plain Meal (Dinner)" && newQty < 1 && delta < 0) {
+        newCart[key] = 1;
+      }
+
       return {
         ...prev,
-        menuItems: updatedItems,
+        cart: newCart,
       };
     });
   };
@@ -219,15 +228,23 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   const handleSubSubmit = async (e) => {
     e.preventDefault();
-    if (subscriptionForm.menuItems.length === 0) {
-      alert("Please select at least one dish from the Menu.");
+    const cartKeys = Object.keys(subscriptionForm.cart).filter((k) => subscriptionForm.cart[k] > 0);
+    if (cartKeys.length === 0) {
+      alert("Please select at least one item from the Menu.");
       return;
     }
 
+    const itemsSummary = cartKeys
+      .map((key) => {
+        const qty = subscriptionForm.cart[key];
+        const name = key.split("_")[1].replace(" (Lunch)", "").replace(" (Dinner)", "");
+        return `${name} (x${qty})`;
+      })
+      .join(", ");
+
     setSummaryData({
       type: "subscription",
-      title: subscriptionForm.menuItems.join(", "),
-      plates: subscriptionForm.plates,
+      title: itemsSummary,
       amount: pricing.totalPayable.toFixed(2),
     });
     setIsSuccess(true);
@@ -238,12 +255,27 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       subscriptionForm.mealPreferences.dinner && "Dinner"
     ].filter(Boolean).join(", ");
 
-    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${subscriptionForm.menuItems.length} Dishes`;
+    const cartItemsHtml = cartKeys
+      .map((key) => {
+        const qty = subscriptionForm.cart[key];
+        const name = key.split("_")[1].replace(" (Lunch)", "").replace(" (Dinner)", "");
+        const itemPrice = key.startsWith("breakfast_")
+          ? breakfastMenu.find((i) => i.name === key.split("_")[1])?.price || 0
+          : key.startsWith("lunch_")
+          ? lunchMenu.find((i) => i.name === key.split("_")[1])?.price || 0
+          : dinnerMenu.find((i) => i.name === key.split("_")[1])?.price || 0;
+        return `<p style="margin: 4px 0;"><strong>${name}</strong> &times; ${qty} = ₹${(itemPrice * qty).toFixed(2)}</p>`;
+      })
+      .join("");
+
+    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${cartKeys.length} items`;
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
         <h2 style="color: #2ecc71; border-bottom: 2px solid #2ecc71; padding-bottom: 8px; margin-top: 0;">New Subscription Order Confirmed</h2>
-        <p><strong>Selected Menu Items:</strong> ${subscriptionForm.menuItems.join(", ")}</p>
-        <p><strong>Number of Plates:</strong> ${subscriptionForm.plates}</p>
+        <div style="margin: 15px 0;">
+          <h3 style="margin-bottom: 8px; color: #333;">Selected Menu Items:</h3>
+          ${cartItemsHtml}
+        </div>
         <p><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
         <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount Paid: ₹${pricing.totalPayable.toFixed(2)}</h3>
         <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
@@ -318,11 +350,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     }
   };
 
-  const isMenuUnlocked = subscriptionForm.mealPreferences.breakfast || 
-                         subscriptionForm.mealPreferences.lunch || 
-                         subscriptionForm.mealPreferences.dinner;
-  const availableMenuItems = getAvailableMenuItems();
-
   if (!isOpen) return null;
 
   return (
@@ -340,13 +367,13 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
               className={`toggle-option ${activeForm === "subscription" ? "active" : ""}`}
               onClick={() => setActiveForm("subscription")}
             >
-              Daily Meal Subscription
+              Daily regular corporate meal
             </div>
             <div
               className={`toggle-option ${activeForm === "corporate" ? "active" : ""}`}
               onClick={() => setActiveForm("corporate")}
             >
-              Corporate & Family Programs
+              Party & function Family & Corporate
             </div>
           </div>
         )}
@@ -364,14 +391,16 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                   Thank you for subscribing to YAMKITCH! Your order is confirmed and our kitchen has begun planning your healthy meals.
                 </p>
                 <div className="success-summary">
-                  <div className="success-summary-item">
-                    <span>Selected Menu Items</span>
-                    <span>{summaryData.title}</span>
-                  </div>
-                  <div className="success-summary-item">
-                    <span>Number of Plates</span>
-                    <span>{summaryData.plates}</span>
-                  </div>
+                  {Object.keys(subscriptionForm.cart).filter(k => subscriptionForm.cart[k] > 0).map((key) => {
+                    const qty = subscriptionForm.cart[key];
+                    const name = key.split("_")[1].replace(" (Lunch)", "").replace(" (Dinner)", "");
+                    return (
+                      <div key={key} className="success-summary-item">
+                        <span>{name} &times; {qty}</span>
+                        <span>{qty} {qty === 1 ? "Plate" : "Plates"}</span>
+                      </div>
+                    );
+                  })}
                   <div className="success-summary-item" style={{ borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "12px", marginTop: "12px" }}>
                     <span>Amount Paid</span>
                     <span style={{ color: "#D4A017", fontWeight: "700" }}>₹{summaryData.amount}</span>
@@ -456,60 +485,167 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                     <span className="form-description">Choose the meals you want in a day</span>
                   </div>
 
-                  {/* Menu Multi-Select Grid */}
-                  <div className="form-group-wrapper">
-                    <label className="form-section-title">
-                      Menu<span>*</span>
-                    </label>
-                    <div className="menu-grid">
-                      {isMenuUnlocked ? (
-                        availableMenuItems.map((item) => {
-                          const isSelected = subscriptionForm.menuItems.includes(item.name);
+                  {/* BREAKFAST SECTION */}
+                  {subscriptionForm.mealPreferences.breakfast && (
+                    <div className="meal-section-block">
+                      <div className="meal-section-header">
+                        <h3>Breakfast Section</h3>
+                        <span className="meal-time">9:00 - 10:00 AM</span>
+                      </div>
+
+                      <div className="meal-group-title">Base Combos (Select one or more)</div>
+                      <div className="menu-grid">
+                        {breakfastMenu.filter((item) => item.isBase).map((item) => {
+                          const key = `breakfast_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
                           return (
-                            <div
-                              key={item.name}
-                              className={`menu-card ${isSelected ? "active" : ""}`}
-                              onClick={() => handleMenuItemToggle(item.name)}
-                            >
-                              <div className="checkbox-indicator">
-                                <FaCheck />
-                              </div>
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
                               <div className="menu-card-details">
                                 <span className="menu-card-title">{item.name}</span>
                                 <span className="menu-card-desc">{item.desc}</span>
                                 <span className="menu-card-price">₹{item.price}</span>
                               </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
                             </div>
                           );
-                        })
-                      ) : (
-                        <div className="menu-placeholder">
-                          Choose a meal preference (Breakfast, Lunch, or Dinner) above first to unlock the menu options.
-                        </div>
-                      )}
+                        })}
+                      </div>
+
+                      <div className="meal-group-title" style={{ marginTop: "15px" }}>Maggi & Add-Ons</div>
+                      <div className="menu-grid">
+                        {breakfastMenu.filter((item) => !item.isBase).map((item) => {
+                          const key = `breakfast_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
+                          return (
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
+                              <div className="menu-card-details">
+                                <span className="menu-card-title">{item.name}</span>
+                                <span className="menu-card-desc">{item.desc}</span>
+                                <span className="menu-card-price">₹{item.price}</span>
+                              </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <span className="form-description">
-                      {isMenuUnlocked ? "Select one or more dishes from the menu" : "Menu will unlock once a preference is selected"}
-                    </span>
-                  </div>
-                  {/* Number of Plates */}
-                  <div className="form-group-wrapper" style={{ marginTop: "20px" }}>
-                    <label className="form-section-title">
-                      Number of Plates<span>*</span>
-                    </label>
-                    <input
-                      type="number"
-                      className="custom-input"
-                      value={subscriptionForm.plates}
-                      onChange={(e) => {
-                        const val = Math.max(1, parseInt(e.target.value) || 1);
-                        handleSubFormChange("plates", val);
-                      }}
-                      min="1"
-                      required
-                    />
-                    <span className="form-description">Enter the number of plates required daily</span>
-                  </div>
+                  )}
+
+                  {/* LUNCH SECTION */}
+                  {subscriptionForm.mealPreferences.lunch && (
+                    <div className="meal-section-block">
+                      <div className="meal-section-header">
+                        <h3>Lunch Section</h3>
+                        <span className="meal-time">1:00 - 2:00 PM</span>
+                      </div>
+
+                      <div className="meal-group-title">Complementary Base</div>
+                      <div className="menu-grid">
+                        {lunchMenu.filter((item) => item.isBase).map((item) => {
+                          const key = `lunch_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
+                          return (
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
+                              <div className="menu-card-details">
+                                <span className="menu-card-title">{item.name.replace(" (Lunch)", "")}</span>
+                                <span className="menu-card-desc">{item.desc}</span>
+                                <span className="menu-card-price">₹{item.price}</span>
+                              </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="meal-group-title" style={{ marginTop: "15px" }}>Add-Ons</div>
+                      <div className="menu-grid">
+                        {lunchMenu.filter((item) => !item.isBase).map((item) => {
+                          const key = `lunch_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
+                          return (
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
+                              <div className="menu-card-details">
+                                <span className="menu-card-title">{item.name.replace(" (Lunch)", "")}</span>
+                                <span className="menu-card-desc">{item.desc}</span>
+                                <span className="menu-card-price">₹{item.price}</span>
+                              </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DINNER SECTION */}
+                  {subscriptionForm.mealPreferences.dinner && (
+                    <div className="meal-section-block">
+                      <div className="meal-section-header">
+                        <h3>Dinner Section</h3>
+                        <span className="meal-time">8:00 - 8:30 PM</span>
+                      </div>
+
+                      <div className="meal-group-title">Complementary Base</div>
+                      <div className="menu-grid">
+                        {dinnerMenu.filter((item) => item.isBase).map((item) => {
+                          const key = `dinner_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
+                          return (
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
+                              <div className="menu-card-details">
+                                <span className="menu-card-title">{item.name.replace(" (Dinner)", "")}</span>
+                                <span className="menu-card-desc">{item.desc}</span>
+                                <span className="menu-card-price">₹{item.price}</span>
+                              </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="meal-group-title" style={{ marginTop: "15px" }}>Add-Ons</div>
+                      <div className="menu-grid">
+                        {dinnerMenu.filter((item) => !item.isBase).map((item) => {
+                          const key = `dinner_${item.name}`;
+                          const qty = subscriptionForm.cart[key] || 0;
+                          return (
+                            <div key={item.name} className={`menu-card ${qty > 0 ? "active" : ""}`}>
+                              <div className="menu-card-details">
+                                <span className="menu-card-title">{item.name.replace(" (Dinner)", "")}</span>
+                                <span className="menu-card-desc">{item.desc}</span>
+                                <span className="menu-card-price">₹{item.price}</span>
+                              </div>
+                              <div className="qty-selector" onClick={(e) => e.stopPropagation()}>
+                                <button type="button" onClick={() => updateCartQty(key, -1)}>-</button>
+                                <span className="qty-val">{qty}</span>
+                                <button type="button" onClick={() => updateCartQty(key, 1)}>+</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </form>
               ) : (
                 /* CORPORATE / EVENT CATERING INQUIRY FORM */
@@ -688,34 +824,39 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                       <FaChevronDown style={{ fontSize: "0.9rem", color: "#888" }} />
                     </h3>
 
-                    {/* Base Plan Line */}
+                    {/* Itemized Cart List */}
                     <div className="receipt-item">
-                      <span>Menu Items ({subscriptionForm.menuItems.length})</span>
-                      <span 
-                        style={{ 
-                          fontWeight: "600", 
-                          color: "white", 
-                          textAlign: "right",
-                          maxWidth: "60%",
-                          wordBreak: "break-word"
-                        }}
-                      >
-                        {subscriptionForm.menuItems.length > 0
-                          ? subscriptionForm.menuItems.join(", ")
-                          : "None Selected"}
+                      <span>Cart Items</span>
+                      <span style={{ fontWeight: "600", color: "#D4A017" }}>
+                        {Object.keys(subscriptionForm.cart).filter(k => subscriptionForm.cart[k] > 0).length} Items
                       </span>
                     </div>
 
-                    {/* Number of Plates */}
-                    <div className="receipt-item">
-                      <span>Number of Plates</span>
-                      <span style={{ fontWeight: "600", color: "white" }}>{subscriptionForm.plates}</span>
-                    </div>
+                    {Object.keys(subscriptionForm.cart).filter(k => subscriptionForm.cart[k] > 0).map((key) => {
+                      const qty = subscriptionForm.cart[key];
+                      const name = key.split("_")[1].replace(" (Lunch)", "").replace(" (Dinner)", "");
+                      
+                      // Find item price
+                      const itemPrice = key.startsWith("breakfast_")
+                        ? breakfastMenu.find((i) => i.name === key.split("_")[1])?.price || 0
+                        : key.startsWith("lunch_")
+                        ? lunchMenu.find((i) => i.name === key.split("_")[1])?.price || 0
+                        : dinnerMenu.find((i) => i.name === key.split("_")[1])?.price || 0;
+
+                      return (
+                        <div key={key} className="receipt-item sub-item">
+                          <span>- {name} &times; {qty}</span>
+                          <span>₹{(itemPrice * qty).toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+
+                    <div className="receipt-divider"></div>
 
                     {/* Active Meals list */}
-                    <div className="receipt-item sub-item">
-                      <span>
-                        Preferences:{" "}
+                    <div className="receipt-item">
+                      <span>Meals Scheduled</span>
+                      <span style={{ fontWeight: "600", color: "white" }}>
                         {[
                           subscriptionForm.mealPreferences.breakfast && "Breakfast",
                           subscriptionForm.mealPreferences.lunch && "Lunch",
@@ -724,7 +865,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                           .filter(Boolean)
                           .join(" + ") || "None Selected"}
                       </span>
-                      <span>₹{(pricing.dailyBase * subscriptionForm.plates).toFixed(2)}/day</span>
                     </div>
                     <div className="receipt-divider"></div>
 
