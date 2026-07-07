@@ -8,15 +8,8 @@ import "./WaysToBring.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const WaysToBring = () => {
+const WaysToBring = ({ openModal }) => {
   const containerRef = useRef();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("subscription");
-
-  const openModal = (type) => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
 
   useGSAP(() => {
     const container = containerRef.current;
@@ -113,12 +106,6 @@ const WaysToBring = () => {
         </div>
       </div>
 
-      {/* Subscription/Catering Interactive Modal */}
-      <SubscriptionModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        initialType={modalType} 
-      />
     </section>
   );
 };

@@ -1,6 +1,6 @@
 import "./Hero.css";
 
-const Hero = () => {
+const Hero = ({ openModal }) => {
   return (
     <section className="hero">
       <div className="hero-video-container">
@@ -42,10 +42,16 @@ const Hero = () => {
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn">
+            <button 
+              className="primary-btn"
+              onClick={() => window.location.href = "tel:+916033550539"}
+            >
               Get Started
             </button>
-            <button className="secondary-btn">
+            <button 
+              className="secondary-btn"
+              onClick={() => openModal && openModal("subscription")}
+            >
               Explore Services
             </button>
           </div>

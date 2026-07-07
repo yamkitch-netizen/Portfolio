@@ -99,15 +99,24 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       subtotal += price * qty;
     });
 
-    // Platform Fee & GST (5%)
+    // Platform Fee & Tiered Delivery Charge
     const platformFee = subtotal > 0 ? 15 : 0;
-    const gst = subtotal * 0.05;
-    const totalPayable = subtotal + platformFee + gst;
+    let deliveryCharge = 0;
+    if (subtotal > 0) {
+      if (subtotal < 200) {
+        deliveryCharge = 50;
+      } else if (subtotal <= 800) {
+        deliveryCharge = 30;
+      } else {
+        deliveryCharge = 0;
+      }
+    }
+    const totalPayable = subtotal + platformFee + deliveryCharge;
 
     return {
       subtotal,
       platformFee,
-      gst,
+      deliveryCharge,
       totalPayable,
     };
   };
@@ -277,6 +286,11 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           ${cartItemsHtml}
         </div>
         <p><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
+        <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; font-size: 0.95em; color: #555;">
+          <p style="margin: 4px 0;"><strong>Subtotal:</strong> ₹${pricing.subtotal.toFixed(2)}</p>
+          <p style="margin: 4px 0;"><strong>Platform Fee:</strong> ₹${pricing.platformFee.toFixed(2)}</p>
+          <p style="margin: 4px 0;"><strong>Delivery Charge:</strong> ${pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge.toFixed(2)}`}</p>
+        </div>
         <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount Paid: ₹${pricing.totalPayable.toFixed(2)}</h3>
         <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
         <p style="font-size: 0.85em; color: #777; margin-bottom: 0;">Sent from YAMKITCH Web Portal</p>
@@ -868,18 +882,18 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                     </div>
                     <div className="receipt-divider"></div>
 
-                    {/* Platform Fee */}
+                    {/* Platform & Delivery */}
                     <div className="receipt-item">
-                      <span>Platform Fee & GST</span>
-                      <span>Platform Checked</span>
+                      <span>Platform & Delivery Charges</span>
+                      <span>Summary</span>
                     </div>
                     <div className="receipt-item sub-item">
                       <span>- Fixed Platform Fee</span>
                       <span>₹{pricing.platformFee}</span>
                     </div>
                     <div className="receipt-item sub-item">
-                      <span>- GST (5%)</span>
-                      <span>₹{pricing.gst.toFixed(2)}</span>
+                      <span>- Delivery Charge</span>
+                      <span>{pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge}`}</span>
                     </div>
 
                     <div className="receipt-divider"></div>

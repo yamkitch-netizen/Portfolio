@@ -10,12 +10,23 @@ const Navbar = ({ currentPath }) => {
   };
 
   const isCorporateActive = currentPath === "#/corporate" || currentPath === "#corporate";
+  const isAboutActive = currentPath === "#/about" || currentPath === "#about";
+  const isHomeActive = !isCorporateActive && !isAboutActive;
 
   return (
     <header className="navbar">
       <div className="container navbar-container">
 
-        <a href="#/" className="logo" onClick={() => setIsOpen(false)}>
+        <a 
+          href="#/" 
+          className="logo" 
+          onClick={(e) => {
+            setIsOpen(false);
+            e.preventDefault();
+            window.location.hash = "#/";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
           <img 
             src="/WhatsApp_Image_2026-07-05_at_21.14.02-removebg-preview.png" 
             alt="YAMKITCH Logo"
@@ -33,7 +44,7 @@ const Navbar = ({ currentPath }) => {
             <li>
               <a 
                 href="#/" 
-                className={!isCorporateActive ? "active-link" : ""} 
+                className={isHomeActive ? "active-link" : ""} 
                 onClick={() => setIsOpen(false)}
               >
                 Home
@@ -56,7 +67,15 @@ const Navbar = ({ currentPath }) => {
                 Services
               </a>
             </li>
-            <li><a href="#/" onClick={() => setIsOpen(false)}>About</a></li>
+            <li>
+              <a 
+                href="#/about" 
+                className={currentPath === "#/about" || currentPath === "#about" ? "active-link" : ""}
+                onClick={() => setIsOpen(false)}
+              >
+                About
+              </a>
+            </li>
             <li>
               <a 
                 href="#/" 
