@@ -109,7 +109,7 @@ const Enquiry = () => {
   }, { scope: containerRef });
 
   return (
-    <section className="enquiry" ref={containerRef}>
+    <section className="enquiry" id="contact" ref={containerRef}>
       <div className="enquiry-glow"></div>
       
       <div className="container enquiry-grid-layout">

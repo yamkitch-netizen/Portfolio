@@ -108,10 +108,7 @@ const EmployeeExperience = () => {
 
                 <p>{card.description}</p>
 
-                <button>
-                  Learn More
-                  <FaArrowRight className="arrow" />
-                </button>
+
               </div>
             </div>
           ))}

@@ -29,12 +29,6 @@ const features = [
     video: "/Healthy_hygienic_card.mp4",
   },
   {
-    icon: <FaTruck />,
-    title: "On-Time Delivery",
-    desc: "Right Time, Every Time",
-    video: "/Food_delivered.mp4",
-  },
-  {
     icon: <FaUsers />,
     title: "Perfect For",
     desc: "Offices, Meetings, Events & More",

@@ -42,6 +42,7 @@ const Navbar = ({ currentPath }) => {
             <li>
               <a 
                 href="#/corporate" 
+                className={isCorporateActive ? "active-link" : ""} 
                 onClick={(e) => {
                   setIsOpen(false);
                   e.preventDefault();
@@ -55,18 +56,23 @@ const Navbar = ({ currentPath }) => {
                 Services
               </a>
             </li>
+            <li><a href="#/" onClick={() => setIsOpen(false)}>About</a></li>
             <li>
               <a 
-                href="#/corporate" 
-                className={isCorporateActive ? "active-link" : ""} 
-                onClick={() => setIsOpen(false)}
+                href="#/" 
+                onClick={(e) => {
+                  setIsOpen(false);
+                  e.preventDefault();
+                  window.location.hash = "#/";
+                  setTimeout(() => {
+                    const el = document.getElementById("contact");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }, 150);
+                }}
               >
-                Corporate
+                Contact
               </a>
             </li>
-            <li><a href="#/" onClick={() => setIsOpen(false)}>Gallery</a></li>
-            <li><a href="#/" onClick={() => setIsOpen(false)}>About</a></li>
-            <li><a href="#/" onClick={() => setIsOpen(false)}>Contact</a></li>
           </ul>
           
           <div className="nav-socials mobile-socials">

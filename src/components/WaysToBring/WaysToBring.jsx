@@ -78,7 +78,7 @@ const WaysToBring = () => {
             </p>
             <a 
               href="#" 
-              className="ways-link"
+              className="ways-link subscribe-highlight"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
