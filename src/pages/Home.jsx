@@ -4,6 +4,7 @@ import EmployeeExperience from "../components/EmployeeExperience/EmployeeExperie
 import WaysToBring from "../components/WaysToBring/WaysToBring";
 import TripuraVideo from "../components/TripuraVideo/TripuraVideo";
 import OfferStory from "../components/OfferStory/OfferStory";
+import GoogleReview from "../components/GoogleReview/GoogleReview";
 import Enquiry from "../components/Enquiry/Enquiry";
 
 const Home = ({ openModal }) => {
@@ -15,6 +16,7 @@ const Home = ({ openModal }) => {
       <WaysToBring openModal={openModal} />
       <TripuraVideo />
       
+      <GoogleReview />
       <Enquiry />
     </>
   );

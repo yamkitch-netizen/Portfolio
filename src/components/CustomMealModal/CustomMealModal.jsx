@@ -19,7 +19,7 @@ const CustomMealModal = ({ isOpen, onClose }) => {
 
   // Step 1: user details  |  Step 2: food items
   const [step, setStep] = useState(1);
-  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "", address: "" });
+  const [userDetails, setUserDetails] = useState({ name: "", email: "", phone: "", address: "" });
   const [userErrors, setUserErrors] = useState({});
 
   const [items, setItems] = useState(["", "", "", "", ""]);
@@ -38,8 +38,6 @@ const CustomMealModal = ({ isOpen, onClose }) => {
   const validateUser = () => {
     const errs = {};
     if (!userDetails.name.trim()) errs.name = "Name is required";
-    if (!userDetails.age.trim() || isNaN(userDetails.age) || +userDetails.age < 1)
-      errs.age = "Enter a valid age";
     if (!userDetails.email.trim() || !/\S+@\S+\.\S+/.test(userDetails.email))
       errs.email = "Enter a valid email";
     if (!userDetails.phone.trim() || userDetails.phone.replace(/\D/g, "").length < 10)
@@ -89,7 +87,6 @@ const CustomMealModal = ({ isOpen, onClose }) => {
           <h3 style="color:#D4A017;font-size:14px;margin:0 0 14px;letter-spacing:1px;">CUSTOMER INFO</h3>
           <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
             <tr><td style="padding:6px 0;color:#aaa;width:80px;">Name</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.name}</td></tr>
-            <tr><td style="padding:6px 0;color:#aaa;">Age</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.age}</td></tr>
             <tr><td style="padding:6px 0;color:#aaa;">Email</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.email}</td></tr>
             <tr><td style="padding:6px 0;color:#aaa;">Phone</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.phone}</td></tr>
             <tr><td style="padding:6px 0;color:#aaa;">Address</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.address}</td></tr>
@@ -121,7 +118,7 @@ const CustomMealModal = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     setStep(1);
-    setUserDetails({ name: "", age: "", email: "", phone: "", address: "" });
+    setUserDetails({ name: "", email: "", phone: "", address: "" });
     setUserErrors({});
     setItems(["", "", "", "", ""]);
     setPlates(1);
@@ -201,20 +198,6 @@ const CustomMealModal = ({ isOpen, onClose }) => {
                   onChange={(e) => handleUserChange("name", e.target.value)}
                 />
                 {userErrors.name && <span className="cm-field-error">{userErrors.name}</span>}
-              </div>
-              <div className="cm-field-group">
-                <label htmlFor="cm-age">Age <span>*</span></label>
-                <input
-                  id="cm-age"
-                  type="number"
-                  min="1"
-                  max="120"
-                  className={`cm-item-input${userErrors.age ? " error" : ""}`}
-                  placeholder="e.g. 28"
-                  value={userDetails.age}
-                  onChange={(e) => handleUserChange("age", e.target.value)}
-                />
-                {userErrors.age && <span className="cm-field-error">{userErrors.age}</span>}
               </div>
               <div className="cm-field-group">
                 <label htmlFor="cm-email">Email Address <span>*</span></label>

@@ -42,7 +42,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   // Gate: user must fill details before accessing the form
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "", address: "" });
+  const [userDetails, setUserDetails] = useState({ name: "", email: "", phone: "", address: "" });
   const [userErrors, setUserErrors] = useState({});
 
   // Form State - Daily Meal Subscription
@@ -290,7 +290,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
         <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">CUSTOMER INFO</h3>
         <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:6px;margin-bottom:20px;">
           <tr><td style="padding:8px 12px;color:#888;width:100px;">Name</td><td style="padding:8px 12px;font-weight:600;">${userDetails.name}</td></tr>
-          <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Address</td><td style="padding:8px 12px;font-weight:600;">${userDetails.address}</td></tr>
@@ -352,7 +351,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
         <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">CUSTOMER INFO</h3>
         <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:6px;margin-bottom:20px;">
           <tr><td style="padding:8px 12px;color:#888;width:120px;">Name</td><td style="padding:8px 12px;font-weight:600;">${userDetails.name}</td></tr>
-          <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Address</td><td style="padding:8px 12px;font-weight:600;">${userDetails.address}</td></tr>
@@ -393,8 +391,6 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
   const validateUser = () => {
     const errs = {};
     if (!userDetails.name.trim()) errs.name = "Name is required";
-    if (!userDetails.age.trim() || isNaN(userDetails.age) || +userDetails.age < 1)
-      errs.age = "Enter a valid age";
     if (!userDetails.email.trim() || !/\S+@\S+\.\S+/.test(userDetails.email))
       errs.email = "Enter a valid email";
     if (!userDetails.phone.trim() || userDetails.phone.replace(/\D/g, "").length < 10)
@@ -429,7 +425,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   const handleClose = () => {
     setIsUnlocked(false);
-    setUserDetails({ name: "", age: "", email: "", phone: "", address: "" });
+    setUserDetails({ name: "", email: "", phone: "", address: "" });
     setUserErrors({});
     onClose();
   };
@@ -449,21 +445,12 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
             <h2 className="sm-gate-title">Enter Your Details to Continue</h2>
             <p className="sm-gate-subtitle">Fill in your info to unlock the subscription builder</p>
             <div className="sm-gate-fields">
-              <div className="sm-gate-row">
-                <div className="sm-gate-field">
-                  <label htmlFor="sm-name">Full Name <span>*</span></label>
-                  <input id="sm-name" type="text" className={`sm-gate-input${userErrors.name ? " error" : ""}`}
-                    placeholder="e.g. Rahul Sharma" value={userDetails.name}
-                    onChange={(e) => handleUserChange("name", e.target.value)} />
-                  {userErrors.name && <span className="sm-gate-error">{userErrors.name}</span>}
-                </div>
-                <div className="sm-gate-field">
-                  <label htmlFor="sm-age">Age <span>*</span></label>
-                  <input id="sm-age" type="number" min="1" max="120" className={`sm-gate-input${userErrors.age ? " error" : ""}`}
-                    placeholder="e.g. 28" value={userDetails.age}
-                    onChange={(e) => handleUserChange("age", e.target.value)} />
-                  {userErrors.age && <span className="sm-gate-error">{userErrors.age}</span>}
-                </div>
+              <div className="sm-gate-field">
+                <label htmlFor="sm-name">Full Name <span>*</span></label>
+                <input id="sm-name" type="text" className={`sm-gate-input${userErrors.name ? " error" : ""}`}
+                  placeholder="e.g. Rahul Sharma" value={userDetails.name}
+                  onChange={(e) => handleUserChange("name", e.target.value)} />
+                {userErrors.name && <span className="sm-gate-error">{userErrors.name}</span>}
               </div>
               <div className="sm-gate-field">
                 <label htmlFor="sm-email">Email Address <span>*</span></label>

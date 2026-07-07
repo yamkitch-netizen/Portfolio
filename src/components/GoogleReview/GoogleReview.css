@@ -1,0 +1,269 @@
+.google-review-section {
+    position: relative;
+    padding: 100px 0;
+    background: #080808;
+    overflow: hidden;
+}
+
+.review-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212, 160, 23, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.google-review-section .container {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.review-card {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 28px;
+    padding: 60px;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: center;
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.4),
+        0 0 50px rgba(212, 160, 23, 0.03);
+}
+
+/* Left Content */
+.review-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.google-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #eee;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.google-icon {
+    color: #4285F4; /* Google Blue */
+}
+
+.review-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.review-content p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #aaa;
+    margin: 0 0 28px 0;
+}
+
+.rating-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stars {
+    display: flex;
+    gap: 4px;
+}
+
+.star {
+    color: #D4A017;
+    font-size: 1.3rem;
+}
+
+.rating-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #eee;
+}
+
+.write-review-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #D4A017, #e6b83a);
+    color: #000;
+    padding: 16px 36px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(212, 160, 23, 0.2);
+}
+
+.write-review-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(212, 160, 23, 0.35);
+}
+
+/* Right Content: QR Code Scan area */
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-frame {
+    position: relative;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 24px;
+    border-radius: 20px;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.qr-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    z-index: 2;
+    background: #fff;
+    padding: 10px;
+}
+
+/* Sci-fi scanner laser effect */
+.scanner-line {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #D4A017, transparent);
+    top: 0;
+    left: 0;
+    z-index: 3;
+    animation: scan 3s linear infinite;
+    box-shadow: 0 0 8px #D4A017;
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    50% { top: 100%; }
+    100% { top: 0; }
+}
+
+/* Corner Frame borders */
+.corner-border {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #D4A017;
+    z-index: 3;
+}
+
+.top-left {
+    top: 12px;
+    left: 12px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+}
+
+.top-right {
+    top: 12px;
+    right: 12px;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 6px;
+}
+
+.bottom-left {
+    bottom: 12px;
+    left: 12px;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: 6px;
+}
+
+.bottom-right {
+    bottom: 12px;
+    right: 12px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 6px;
+}
+
+.qr-instructions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.qr-icon {
+    font-size: 1rem;
+    color: #D4A017;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+    .review-card {
+        padding: 40px;
+        gap: 40px;
+    }
+    .review-content h2 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .google-review-section {
+        padding: 60px 0;
+    }
+    .review-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 35px 24px;
+        gap: 35px;
+    }
+    .review-content {
+        align-items: center;
+        text-align: center;
+    }
+    .review-content h2 {
+        font-size: 2rem;
+    }
+    .review-content p {
+        font-size: 0.95rem;
+    }
+}
