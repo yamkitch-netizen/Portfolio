@@ -217,15 +217,12 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     `;
 
     try {
-      await fetch("https://corsproxy.io/?https://api.resend.com/emails", {
+      await fetch("/api/send-email", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "YAMKITCH Portal <portal@yamkitch.in>",
-          to: "yamkitch@gmail.com",
           subject: emailSubject,
           html: emailHtml,
         }),
@@ -271,15 +268,12 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     `;
 
     try {
-      await fetch("https://corsproxy.io/?https://api.resend.com/emails", {
+      await fetch("/api/send-email", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "YAMKITCH Portal <portal@yamkitch.in>",
-          to: "yamkitch@gmail.com",
           subject: emailSubject,
           html: emailHtml,
         }),
