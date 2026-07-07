@@ -25,7 +25,7 @@ const AboutPage = () => {
 
         <div className="container hero-container">
           <div className="hero-left">
-            <span className="tag" style={{ color: "#E91E63" }}>
+            <span className="tag" style={{ color: "#D4A017" }}>
               ABOUT US
             </span>
             <h1>
