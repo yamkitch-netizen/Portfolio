@@ -19,10 +19,11 @@ const CustomMealModal = ({ isOpen, onClose }) => {
 
   // Step 1: user details  |  Step 2: food items
   const [step, setStep] = useState(1);
-  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "" });
+  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "", address: "" });
   const [userErrors, setUserErrors] = useState({});
 
   const [items, setItems] = useState(["", "", "", "", ""]);
+  const [plates, setPlates] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -43,6 +44,8 @@ const CustomMealModal = ({ isOpen, onClose }) => {
       errs.email = "Enter a valid email";
     if (!userDetails.phone.trim() || userDetails.phone.replace(/\D/g, "").length < 10)
       errs.phone = "Enter a valid phone number";
+    if (!userDetails.address.trim())
+      errs.address = "Address is required";
     return errs;
   };
 
@@ -89,6 +92,8 @@ const CustomMealModal = ({ isOpen, onClose }) => {
             <tr><td style="padding:6px 0;color:#aaa;">Age</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.age}</td></tr>
             <tr><td style="padding:6px 0;color:#aaa;">Email</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.email}</td></tr>
             <tr><td style="padding:6px 0;color:#aaa;">Phone</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.phone}</td></tr>
+            <tr><td style="padding:6px 0;color:#aaa;">Address</td><td style="padding:6px 0;color:#fff;font-weight:600;">${userDetails.address}</td></tr>
+            <tr><td style="padding:6px 0;color:#aaa;">Plates</td><td style="padding:6px 0;color:#fff;font-weight:600;">${plates}</td></tr>
           </table>
           <h3 style="color:#D4A017;font-size:14px;margin:0 0 14px;letter-spacing:1px;">REQUESTED ITEMS</h3>
           <table style="width:100%;border-collapse:collapse;background:#1a1a1a;border-radius:10px;overflow:hidden;">
@@ -116,9 +121,10 @@ const CustomMealModal = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     setStep(1);
-    setUserDetails({ name: "", age: "", email: "", phone: "" });
+    setUserDetails({ name: "", age: "", email: "", phone: "", address: "" });
     setUserErrors({});
     setItems(["", "", "", "", ""]);
+    setPlates(1);
     setIsSubmitted(false);
     onClose();
   };
@@ -128,7 +134,7 @@ const CustomMealModal = ({ isOpen, onClose }) => {
     const itemList = filledItems.length
       ? filledItems.map((item, i) => `Item ${i + 1}: ${item}`).join("%0A")
       : "No items specified";
-    const message = `Hello YAMKITCH! I want to customize my meal.%0A%0A${itemList}%0A%0APlease help me with a custom meal plan.`;
+    const message = `Hello YAMKITCH! I want to customize my meal.%0A%0APlates Needed: ${plates}%0A%0A${itemList}%0A%0APlease help me with a custom meal plan.`;
     window.open(`https://wa.me/${PHONE_NUMBER.replace("+", "")}?text=${message}`, "_blank");
   };
 
@@ -234,6 +240,18 @@ const CustomMealModal = ({ isOpen, onClose }) => {
                 />
                 {userErrors.phone && <span className="cm-field-error">{userErrors.phone}</span>}
               </div>
+              <div className="cm-field-group">
+                <label htmlFor="cm-address">Delivery Address <span>*</span></label>
+                <input
+                  id="cm-address"
+                  type="text"
+                  className={`cm-item-input${userErrors.address ? " error" : ""}`}
+                  placeholder="e.g. House No. 25, Sector 4, Agartala"
+                  value={userDetails.address}
+                  onChange={(e) => handleUserChange("address", e.target.value)}
+                />
+                {userErrors.address && <span className="cm-field-error">{userErrors.address}</span>}
+              </div>
             </div>
             <button className="cm-submit-btn" onClick={handleUnlock}>
               <FaUnlock />
@@ -262,6 +280,19 @@ const CustomMealModal = ({ isOpen, onClose }) => {
                   />
                 </div>
               ))}
+            </div>
+            <div className="cm-field-group" style={{ marginTop: "18px" }}>
+              <label htmlFor="cm-plates" style={{ color: "#D4A017", fontWeight: "600", fontSize: "0.85rem" }}>
+                Number of Plates / Servings <span>*</span>
+              </label>
+              <input
+                id="cm-plates"
+                type="number"
+                min="1"
+                className="cm-item-input"
+                value={plates}
+                onChange={(e) => setPlates(Math.max(1, parseInt(e.target.value) || 1))}
+              />
             </div>
             <button
               className={`cm-submit-btn${isSubmitting ? " loading" : ""}`}

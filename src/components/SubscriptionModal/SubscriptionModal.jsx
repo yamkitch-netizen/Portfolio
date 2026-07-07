@@ -42,7 +42,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   // Gate: user must fill details before accessing the form
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "" });
+  const [userDetails, setUserDetails] = useState({ name: "", age: "", email: "", phone: "", address: "" });
   const [userErrors, setUserErrors] = useState({});
 
   // Form State - Daily Meal Subscription
@@ -293,6 +293,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Address</td><td style="padding:8px 12px;font-weight:600;">${userDetails.address}</td></tr>
         </table>
 
         <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">ORDER DETAILS</h3>
@@ -354,6 +355,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           <tr><td style="padding:8px 12px;color:#888;">Age</td><td style="padding:8px 12px;font-weight:600;">${userDetails.age}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Phone</td><td style="padding:8px 12px;font-weight:600;">${userDetails.phone}</td></tr>
+          <tr><td style="padding:8px 12px;color:#888;">Address</td><td style="padding:8px 12px;font-weight:600;">${userDetails.address}</td></tr>
         </table>
 
         <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">EVENT DETAILS</h3>
@@ -397,6 +399,8 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       errs.email = "Enter a valid email";
     if (!userDetails.phone.trim() || userDetails.phone.replace(/\D/g, "").length < 10)
       errs.phone = "Enter a valid phone number";
+    if (!userDetails.address.trim())
+      errs.address = "Address is required";
     return errs;
   };
 
@@ -425,7 +429,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
 
   const handleClose = () => {
     setIsUnlocked(false);
-    setUserDetails({ name: "", age: "", email: "", phone: "" });
+    setUserDetails({ name: "", age: "", email: "", phone: "", address: "" });
     setUserErrors({});
     onClose();
   };
@@ -474,6 +478,13 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                   placeholder="e.g. +91 98765 43210" value={userDetails.phone}
                   onChange={(e) => handleUserChange("phone", e.target.value)} />
                 {userErrors.phone && <span className="sm-gate-error">{userErrors.phone}</span>}
+              </div>
+              <div className="sm-gate-field">
+                <label htmlFor="sm-address">Delivery Address <span>*</span></label>
+                <input id="sm-address" type="text" className={`sm-gate-input${userErrors.address ? " error" : ""}`}
+                  placeholder="e.g. House No. 25, Sector 4, Agartala" value={userDetails.address}
+                  onChange={(e) => handleUserChange("address", e.target.value)} />
+                {userErrors.address && <span className="sm-gate-error">{userErrors.address}</span>}
               </div>
             </div>
             <button className="sm-gate-unlock-btn" onClick={handleUnlock}>

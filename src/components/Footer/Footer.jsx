@@ -16,6 +16,12 @@ const Footer = () => {
                 alt="YAMKITCH Logo"
               />
             </a>
+            <div className="footer-logo-info" style={{ margin: "12px 0 18px", fontSize: "0.88rem", lineHeight: "1.4" }}>
+              <div style={{ color: "#D4A017", fontWeight: "600" }}>Agartala, Tripura, 799001</div>
+              <div style={{ color: "#aaa", fontSize: "0.8rem", marginTop: "4px", letterSpacing: "0.5px" }}>
+                9:00-10:00 AM &bull; 1:00-2:00 PM &bull; 8:00-8:30 PM
+              </div>
+            </div>
             <p>
               Fresh, healthy, and hygienic daily subscription meals and professional event catering services prepared by local experts and delivered to your doorstep.
             </p>
