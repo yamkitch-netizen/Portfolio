@@ -1,42 +1,33 @@
 import { useState, useEffect } from "react";
 import { FaTimes, FaCheck, FaCreditCard, FaCheckCircle, FaChevronDown } from "react-icons/fa";
+import { defaultBreakfastMenu, defaultLunchMenu, defaultDinnerMenu } from "../../data/defaultMenu";
 import "./SubscriptionModal.css";
 
-// Menu items defined as per user specification
-const breakfastMenu = [
-  { name: "Roti + Sabji", price: 26, desc: "3 Roti + Aloo Dum / Mixed Vegetables", isBase: true },
-  { name: "Puri + Sabji", price: 26, desc: "4 Puri + Aloo Dum / Mixed Vegetables", isBase: true },
-  { name: "Roti + Tadka", price: 37, desc: "3 Roti + Egg Tadka", isBase: true },
-  { name: "Puri + Tadka", price: 37, desc: "4 Puri + Egg Tadka", isBase: true },
-  { name: "Plain Maggi", price: 40, desc: "Plain Maggi with butter", isBase: false },
-  { name: "Egg Maggi", price: 59, desc: "Egg Maggi with butter", isBase: false },
-  { name: "Half Boiled Omelette", price: 15, desc: "Soft-runny omelette", isBase: false },
-  { name: "Half Boiled Egg", price: 12, desc: "1 soft-boiled egg", isBase: false },
-  { name: "Proper Boiled Omelette", price: 15, desc: "Fully cooked omelette", isBase: false },
-  { name: "Salad", price: 59, desc: "Fresh green salad", isBase: false },
-];
-
-const lunchMenu = [
-  { name: "Plain Meal (Lunch)", price: 59, desc: "Plain Rice + Dal + Vegetable Fry", isBase: true },
-  { name: "Mixed / Seasonal Vegetables (Lunch)", price: 19, desc: "Aloo Dum / Mixed Vegetables & others", isBase: false },
-  { name: "Omelette (Lunch)", price: 15, desc: "Chicken", isBase: false },
-  { name: "Egg Tadka (Lunch)", price: 30, desc: "Chicken", isBase: false },
-  { name: "Chicken Curry (Lunch)", price: 59, desc: "with Butter (4 Pieces + 1 Potato)", isBase: false },
-  { name: "Paneer Curry (Lunch)", price: 59, desc: "Paneer with butter gravy", isBase: false },
-  { name: "Chicken Dum Biryani (Lunch)", price: 119, desc: "(1 Chicken Piece + 1 Potato + 1 Boiled Egg)", isBase: false },
-];
-
-const dinnerMenu = [
-  { name: "Plain Meal (Dinner)", price: 59, desc: "Plain Rice + Dal + Vegetable Fry", isBase: true },
-  { name: "Mixed / Seasonal Vegetables (Dinner)", price: 19, desc: "Aloo Dum / Mixed Vegetables & others", isBase: false },
-  { name: "Omelette (Dinner)", price: 15, desc: "Chicken", isBase: false },
-  { name: "Egg Tadka (Dinner)", price: 30, desc: "Chicken", isBase: false },
-  { name: "Chicken Curry (Dinner)", price: 59, desc: "with Butter (4 Pieces + 1 Potato)", isBase: false },
-  { name: "Paneer Curry (Dinner)", price: 59, desc: "Paneer with butter gravy", isBase: false },
-  { name: "Chicken Dum Biryani (Dinner)", price: 119, desc: "(1 Chicken Piece + 1 Potato + 1 Boiled Egg)", isBase: false },
-];
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
+  const [breakfastMenu, setBreakfastMenu] = useState(defaultBreakfastMenu);
+  const [lunchMenu, setLunchMenu] = useState(defaultLunchMenu);
+  const [dinnerMenu, setDinnerMenu] = useState(defaultDinnerMenu);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    fetch(`${API_BASE}/api/menu`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active || !data?.items?.length) return;
+        setBreakfastMenu(data.items.filter((i) => i.category === "breakfast"));
+        setLunchMenu(data.items.filter((i) => i.category === "lunch"));
+        setDinnerMenu(data.items.filter((i) => i.category === "dinner"));
+      })
+      .catch(() => {
+        // Keep default fallback menu if backend is offline
+      });
+    return () => {
+      active = false;
+    };
+  }, [isOpen]);
   const [activeForm, setActiveForm] = useState(initialType || "subscription");
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -369,20 +360,65 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       </div>
     `;
 
+    const orderItems = cartKeys.map((key) => {
+      const qty = subscriptionForm.cart[key];
+      const rawName = key.split("_")[1];
+      const mealSlot = key.startsWith("breakfast_")
+        ? "breakfast"
+        : key.startsWith("lunch_")
+        ? "lunch"
+        : "dinner";
+      const name = rawName.replace(" (Lunch)", "").replace(" (Dinner)", "");
+      const price =
+        mealSlot === "breakfast"
+          ? breakfastMenu.find((i) => i.name === rawName)?.price || 0
+          : mealSlot === "lunch"
+          ? lunchMenu.find((i) => i.name === rawName)?.price || 0
+          : dinnerMenu.find((i) => i.name === rawName)?.price || 0;
+      return {
+        name,
+        mealSlot,
+        qty,
+        price,
+        lineTotal: price * qty,
+      };
+    });
+
+    const mealsScheduledList = [
+      subscriptionForm.mealPreferences.breakfast && "Breakfast",
+      subscriptionForm.mealPreferences.lunch && "Lunch",
+      subscriptionForm.mealPreferences.dinner && "Dinner",
+    ].filter(Boolean);
+
     try {
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: ["yamkitch@gmail.com", userDetails.email],
-          subject: emailSubject,
-          html: emailHtml,
+      await Promise.all([
+        fetch(`${API_BASE}/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            invoiceNumber,
+            customer: userDetails,
+            items: orderItems,
+            mealsScheduled: mealsScheduledList,
+            subtotal: pricing.subtotal,
+            deliveryCharge: pricing.deliveryCharge,
+            totalPayable: pricing.totalPayable,
+          }),
         }),
-      });
+        fetch(`${API_BASE}/api/send-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: ["yamkitch@gmail.com", userDetails.email],
+            subject: emailSubject,
+            html: emailHtml,
+          }),
+        }),
+      ]);
     } catch (error) {
-      console.error("Failed to dispatch email:", error);
+      console.error("Failed to record order or dispatch email:", error);
     }
   };
 
@@ -398,13 +434,17 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     });
     setIsSuccess(true);
 
-    const requiredMeals = [
+    const requiredMealsList = [
       corporateForm.mealsNeeded.breakfast && "Breakfast",
       corporateForm.mealsNeeded.lunch && "Lunch",
-      corporateForm.mealsNeeded.dinner && "Dinner"
-    ].filter(Boolean).join(", ");
+      corporateForm.mealsNeeded.dinner && "Dinner",
+    ].filter(Boolean);
+    const requiredMeals = requiredMealsList.join(", ");
 
-    const emailSubject = `[YAMKITCH] New Catering & Quote Enquiry - ${corporateForm.name || userDetails.name}`;
+    const now = new Date();
+    const refNumber = `YK-EVT-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getTime()).slice(-4)}`;
+
+    const emailSubject = `[YAMKITCH] New Catering & Quote Enquiry (${refNumber}) - ${corporateForm.name || userDetails.name}`;
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 24px; border-radius: 8px;">
         <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">🍽️ New Event Catering Request</h2>
@@ -429,18 +469,44 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
     `;
 
     try {
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subject: emailSubject,
-          html: emailHtml,
+      await Promise.all([
+        fetch(`${API_BASE}/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            invoiceNumber: refNumber,
+            orderType: "corporate",
+            customer: {
+              name: corporateForm.name || userDetails.name,
+              email: corporateForm.email || userDetails.email,
+              phone: corporateForm.phone || userDetails.phone,
+              address: userDetails.address || "",
+              organisation: corporateForm.orgName || "",
+            },
+            mealsScheduled: requiredMealsList,
+            corporateDetails: {
+              programType: corporateForm.programType,
+              guestsCount: Number(corporateForm.guestsCount) || 0,
+              serviceStyle: corporateForm.serviceStyle,
+            },
+            subtotal: 0,
+            deliveryCharge: 0,
+            totalPayable: 0,
+          }),
         }),
-      });
+        fetch(`${API_BASE}/api/send-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subject: emailSubject,
+            html: emailHtml,
+          }),
+        }),
+      ]);
     } catch (error) {
-      console.error("Failed to dispatch email:", error);
+      console.error("Failed to record catering enquiry or dispatch email:", error);
     }
   };
 
@@ -470,6 +536,9 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
+      setIsSuccess(false);
+      setSummaryData(null);
+      setActiveForm(initialType || "subscription");
       document.body.classList.add("modal-open");
       document.body.style.overflow = "hidden";
     } else {
@@ -480,11 +549,13 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       document.body.classList.remove("modal-open");
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, initialType]);
 
   if (!isOpen) return null;
 
   const handleClose = () => {
+    setIsSuccess(false);
+    setSummaryData(null);
     setIsUnlocked(false);
     setUserDetails({ name: "", email: "", phone: "", address: "" });
     setUserErrors({});
@@ -546,7 +617,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           <>
         {/* Tab Selector Header (Only shown when not in success view) */}
         {!isSuccess && (
-          <div className="capsule-toggle" style={{ margin: "20px 45px 0 45px", width: "calc(100% - 90px)" }}>
+          <div className="capsule-toggle" style={{ margin: "22px 76px 0 45px", width: "calc(100% - 121px)" }}>
             <div
               className={`toggle-option ${activeForm === "subscription" ? "active" : ""}`}
               onClick={() => setActiveForm("subscription")}
@@ -617,7 +688,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
                 </div>
               </>
             )}
-            <button className="success-close-btn" onClick={onClose}>
+            <button className="success-close-btn" onClick={handleClose}>
               Go Back to Website
             </button>
           </div>

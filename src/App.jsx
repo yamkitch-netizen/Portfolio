@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import CorporatePage from "./pages/CorporatePage";
 import AboutPage from "./pages/AboutPage";
+import AdminPage from "./pages/AdminPage";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import WhatsAppButton from "./components/WhatsAppButton/WhatsAppButton";
@@ -28,9 +29,15 @@ function App() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  // Match current hash routes
+  // Match current routes
+  const isAdmin =
+    window.location.pathname === "/admin" || window.location.pathname === "/admin/";
   const isCorporate = currentPath === "#/corporate" || currentPath === "#corporate";
   const isAbout = currentPath === "#/about" || currentPath === "#about";
+
+  if (isAdmin) {
+    return <AdminPage />;
+  }
 
   return (
     <>

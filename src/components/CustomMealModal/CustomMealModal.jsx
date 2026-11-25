@@ -3,6 +3,7 @@ import { FaTimes, FaPhoneAlt, FaUtensils, FaCheckCircle, FaPaperPlane, FaUser, F
 import "./CustomMealModal.css";
 
 const PHONE_NUMBER = "+919366985516";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 const CustomMealModal = ({ isOpen, onClose }) => {
   // Lock body scroll when modal is open
@@ -101,11 +102,33 @@ const CustomMealModal = ({ isOpen, onClose }) => {
           </div>
         </div>`;
 
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject: "🍽️ New Custom Meal Request — YAMKITCH", html }),
-      });
+      const now = new Date();
+      const refNumber = `YK-CST-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getTime()).slice(-4)}`;
+
+      const [orderRes, response] = await Promise.all([
+        fetch(`${API_BASE}/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            invoiceNumber: refNumber,
+            orderType: "custom",
+            customer: userDetails,
+            customMealDetails: {
+              items: filledItems,
+              plates,
+            },
+            subtotal: 0,
+            deliveryCharge: 0,
+            totalPayable: 0,
+          }),
+        }),
+        fetch(`${API_BASE}/api/send-email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subject: `🍽️ New Custom Meal Request (${refNumber}) — YAMKITCH`, html }),
+        }),
+      ]);
+      if (!orderRes.ok) console.error("Order save error:", await orderRes.json());
       if (!response.ok) console.error("Email error:", await response.json());
       setIsSubmitted(true);
     } catch (err) {
