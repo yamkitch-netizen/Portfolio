@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaTimes, FaPhoneAlt, FaUtensils, FaCheckCircle, FaPaperPlane, FaUser, FaLock, FaUnlock } from "react-icons/fa";
 import "./CustomMealModal.css";
 
-const PHONE_NUMBER = "+916033550539";
+const PHONE_NUMBER = "+919366985516";
 
 const CustomMealModal = ({ isOpen, onClose }) => {
   // Lock body scroll when modal is open

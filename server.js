@@ -3,9 +3,29 @@
 // Vite proxies /api/* -> http://localhost:3001
 
 import http from "http";
+import fs from "fs";
+import path from "path";
 
 const PORT = 3001;
-const RESEND_API_KEY = "re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj";
+
+function loadEnvKey(key) {
+  if (process.env[key]) return process.env[key];
+  try {
+    const envPath = path.resolve(process.cwd(), ".env");
+    const envContent = fs.readFileSync(envPath, "utf8");
+    for (const line of envContent.split(/\r?\n/)) {
+      const match = line.match(/^\s*([^#=\s]+)\s*=\s*(.*)\s*$/);
+      if (match && match[1] === key) {
+        return match[2].replace(/^['"]|['"]$/g, "");
+      }
+    }
+  } catch {
+    // .env file is optional when env var is provided by the host
+  }
+  return "";
+}
+
+const RESEND_API_KEY = loadEnvKey("RESEND_API_KEY");
 
 const server = http.createServer(async (req, res) => {
   // CORS headers
@@ -24,7 +44,10 @@ const server = http.createServer(async (req, res) => {
     req.on("data", (chunk) => (body += chunk));
     req.on("end", async () => {
       try {
-        const { subject, html } = JSON.parse(body);
+        const { subject, html, to } = JSON.parse(body);
+        const rawRecipients = Array.isArray(to) ? to : to ? [to] : [];
+        const recipients = [...new Set(rawRecipients.map((addr) => String(addr).trim()).filter(Boolean))];
+        const finalTo = recipients.length > 0 ? recipients : ["yamkitch@gmail.com"];
 
         const response = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -34,7 +57,7 @@ const server = http.createServer(async (req, res) => {
           },
           body: JSON.stringify({
             from: "YAMKITCH Portal <portal@yamkitch.in>",
-            to: "yamkitch@gmail.com",
+            to: finalTo,
             subject,
             html,
           }),

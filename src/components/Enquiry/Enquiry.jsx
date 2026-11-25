@@ -143,7 +143,7 @@ const Enquiry = () => {
               </div>
               <div className="info-text">
                 <h4>Call Us</h4>
-                <a href="tel:+919876543210">+91 60335 50539</a>
+                <a href="tel:+919366985516">+91 93669 85516</a>
               </div>
             </div>
 

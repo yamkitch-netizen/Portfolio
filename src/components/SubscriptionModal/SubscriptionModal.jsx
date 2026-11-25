@@ -269,25 +269,62 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
       subscriptionForm.mealPreferences.dinner && "Dinner"
     ].filter(Boolean).join(", ");
 
-    const cartItemsHtml = cartKeys
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    const invoiceNumber = `YK-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getTime()).slice(-4)}`;
+
+    const cartRowsHtml = cartKeys
       .map((key) => {
         const qty = subscriptionForm.cart[key];
-        const name = key.split("_")[1].replace(" (Lunch)", "").replace(" (Dinner)", "");
-        const itemPrice = key.startsWith("breakfast_")
-          ? breakfastMenu.find((i) => i.name === key.split("_")[1])?.price || 0
+        const rawName = key.split("_")[1];
+        const mealSlot = key.startsWith("breakfast_")
+          ? "Breakfast"
           : key.startsWith("lunch_")
-          ? lunchMenu.find((i) => i.name === key.split("_")[1])?.price || 0
-          : dinnerMenu.find((i) => i.name === key.split("_")[1])?.price || 0;
-        return `<p style="margin: 4px 0;"><strong>${name}</strong> &times; ${qty} = ₹${(itemPrice * qty).toFixed(2)}</p>`;
+          ? "Lunch"
+          : "Dinner";
+        const name = rawName.replace(" (Lunch)", "").replace(" (Dinner)", "");
+        const itemPrice = key.startsWith("breakfast_")
+          ? breakfastMenu.find((i) => i.name === rawName)?.price || 0
+          : key.startsWith("lunch_")
+          ? lunchMenu.find((i) => i.name === rawName)?.price || 0
+          : dinnerMenu.find((i) => i.name === rawName)?.price || 0;
+        const lineTotal = itemPrice * qty;
+        return `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #eee;">
+              <strong>${name}</strong>
+              <div style="font-size: 12px; color: #888;">${mealSlot}</div>
+            </td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #eee; text-align: center;">${qty}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #eee; text-align: right;">₹${itemPrice.toFixed(2)}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600;">₹${lineTotal.toFixed(2)}</td>
+          </tr>`;
       })
       .join("");
 
-    const emailSubject = `[YAMKITCH] New Daily Meal Subscription - ${userDetails.name}`;
+    const emailSubject = `[YAMKITCH] Invoice ${invoiceNumber} - ${userDetails.name}`;
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 24px; border-radius: 8px;">
-        <h2 style="color: #D4A017; border-bottom: 2px solid #D4A017; padding-bottom: 8px; margin-top: 0;">🍽️ New Meal Subscription Order</h2>
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 640px; margin: 0 auto; border: 1px solid #e5e5e5; padding: 28px; border-radius: 10px; background: #ffffff;">
+        <table style="width: 100%; border-bottom: 2px solid #D4A017; padding-bottom: 16px; margin-bottom: 20px;">
+          <tr>
+            <td>
+              <h2 style="color: #D4A017; margin: 0; font-size: 24px; letter-spacing: 0.5px;">YAMKITCH</h2>
+              <p style="margin: 2px 0 0; font-size: 12px; color: #777;">Fresh &bull; Healthy &bull; Hygienic | Agartala, Tripura</p>
+              <p style="margin: 2px 0 0; font-size: 12px; color: #777;">Phone: +91 93669 85516 | Email: yamkitch@gmail.com</p>
+            </td>
+            <td style="text-align: right; vertical-align: top;">
+              <div style="font-size: 18px; font-weight: 700; color: #222; letter-spacing: 1px;">INVOICE</div>
+              <div style="font-size: 13px; color: #555; margin-top: 4px;"><strong>No:</strong> ${invoiceNumber}</div>
+              <div style="font-size: 13px; color: #555;"><strong>Date:</strong> ${dateStr}</div>
+            </td>
+          </tr>
+        </table>
 
-        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">CUSTOMER INFO</h3>
+        <h3 style="color:#555;font-size:12px;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase;">Bill To</h3>
         <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:6px;margin-bottom:20px;">
           <tr><td style="padding:8px 12px;color:#888;width:100px;">Name</td><td style="padding:8px 12px;font-weight:600;">${userDetails.name}</td></tr>
           <tr><td style="padding:8px 12px;color:#888;">Email</td><td style="padding:8px 12px;font-weight:600;">${userDetails.email}</td></tr>
@@ -295,17 +332,40 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           <tr><td style="padding:8px 12px;color:#888;">Address</td><td style="padding:8px 12px;font-weight:600;">${userDetails.address}</td></tr>
         </table>
 
-        <h3 style="color:#555;font-size:13px;letter-spacing:1px;margin:0 0 10px;">ORDER DETAILS</h3>
-        <div style="margin-bottom:12px;">${cartItemsHtml}</div>
-        <p><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
+        <h3 style="color:#555;font-size:12px;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase;">Order Summary</h3>
+        <p style="margin: 0 0 12px; font-size: 13px; color: #555;"><strong>Meals Scheduled:</strong> ${activeMeals || "None"}</p>
 
-        <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; font-size: 0.95em; color: #555;">
-          <p style="margin: 4px 0;"><strong>Subtotal:</strong> ₹${pricing.subtotal.toFixed(2)}</p>
-          <p style="margin: 4px 0;"><strong>Delivery Charge:</strong> ${pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge.toFixed(2)}`}</p>
-        </div>
-        <h3 style="color: #D4A017; font-size: 1.3em; margin-top: 20px;">Total Amount: ₹${pricing.totalPayable.toFixed(2)}</h3>
-        <hr style="border: 0; border-top: 1px solid #ccc; margin-top: 20px;" />
-        <p style="font-size: 0.85em; color: #777; margin-bottom: 0;">Sent from YAMKITCH Web Portal</p>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 14px;">
+          <thead>
+            <tr style="background: #f3f0e6; color: #333;">
+              <th style="padding: 10px 12px; text-align: left; border-bottom: 2px solid #D4A017;">Item</th>
+              <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #D4A017;">Qty</th>
+              <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #D4A017;">Rate</th>
+              <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #D4A017;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cartRowsHtml}
+          </tbody>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr>
+            <td style="padding: 4px 12px; text-align: right; color: #666;">Subtotal:</td>
+            <td style="padding: 4px 12px; text-align: right; width: 120px;">₹${pricing.subtotal.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 12px; text-align: right; color: #666;">Delivery Charge:</td>
+            <td style="padding: 4px 12px; text-align: right;">${pricing.deliveryCharge === 0 ? "FREE" : `₹${pricing.deliveryCharge.toFixed(2)}`}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 12px; text-align: right; font-size: 16px; font-weight: 700; color: #D4A017; border-top: 2px solid #eee;">Total Payable:</td>
+            <td style="padding: 10px 12px; text-align: right; font-size: 16px; font-weight: 700; color: #D4A017; border-top: 2px solid #eee;">₹${pricing.totalPayable.toFixed(2)}</td>
+          </tr>
+        </table>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin-top: 22px;" />
+        <p style="font-size: 12px; color: #888; margin-bottom: 0; text-align: center;">Thank you for ordering with YAMKITCH! This is a computer-generated invoice.</p>
       </div>
     `;
 
@@ -316,6 +376,7 @@ const SubscriptionModal = ({ isOpen, onClose, initialType }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          to: ["yamkitch@gmail.com", userDetails.email],
           subject: emailSubject,
           html: emailHtml,
         }),

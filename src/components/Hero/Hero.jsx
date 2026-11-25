@@ -44,7 +44,7 @@ const Hero = ({ openModal }) => {
           <div className="hero-buttons">
             <button 
               className="primary-btn"
-              onClick={() => window.location.href = "tel:+916033550539"}
+              onClick={() => window.location.href = "tel:+919366985516"}
             >
               Get Started
             </button>
