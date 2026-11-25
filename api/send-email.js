@@ -15,22 +15,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { subject, html } = req.body;
+    const { subject, html, to } = req.body;
 
     if (!subject || !html) {
       return res.status(400).json({ error: "Missing subject or html content" });
     }
 
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "RESEND_API_KEY is not configured" });
+    }
+
+    const rawRecipients = Array.isArray(to) ? to : to ? [to] : [];
+    const recipients = [...new Set(rawRecipients.map((addr) => String(addr).trim()).filter(Boolean))];
+    const finalTo = recipients.length > 0 ? recipients : ["yamkitch@gmail.com"];
+
     // Call Resend API from backend
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer re_hy8zjuS4_FW4JK4iDBvPaGP3BNjsmyhgj",
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "YAMKITCH Portal <portal@yamkitch.in>",
-        to: "yamkitch@gmail.com",
+        to: finalTo,
         subject: subject,
         html: html,
       }),
