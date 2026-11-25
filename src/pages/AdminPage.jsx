@@ -518,7 +518,7 @@ const AdminPage = () => {
                   <tbody>
                     {dailyOrders.map((order) => (
                       <tr key={order._id}>
-                        <td>
+                        <td data-label="Invoice & Date">
                           <div className="invoice-badge">{order.invoiceNumber}</div>
                           <div className="muted-text">
                             {new Date(order.createdAt).toLocaleString("en-IN", {
@@ -527,13 +527,13 @@ const AdminPage = () => {
                             })}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Customer">
                           <strong>{order.customer?.name}</strong>
                           <div className="muted-text">{order.customer?.phone}</div>
                           <div className="muted-text">{order.customer?.email}</div>
                           <div className="muted-text">{order.customer?.address}</div>
                         </td>
-                        <td>
+                        <td data-label="Items Ordered">
                           <ul className="order-items-list">
                             {(order.items || []).map((it, idx) => (
                               <li key={idx}>
@@ -543,7 +543,7 @@ const AdminPage = () => {
                             ))}
                           </ul>
                         </td>
-                        <td>
+                        <td data-label="Total">
                           <strong className="gold-text">
                             ₹{(order.totalPayable || 0).toFixed(2)}
                           </strong>
@@ -552,7 +552,7 @@ const AdminPage = () => {
                             {order.deliveryCharge === 0 ? "FREE" : `₹${order.deliveryCharge}`}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Status">
                           <CustomSelect
                             className={`status-select-wrap status-${(order.status || "Pending").toLowerCase()}`}
                             value={order.status || "Pending"}
@@ -560,7 +560,7 @@ const AdminPage = () => {
                             onChange={(val) => handleStatusChange(order._id, val)}
                           />
                         </td>
-                        <td>
+                        <td data-label="Action" className="td-action">
                           <button
                             className="icon-danger-btn"
                             onClick={() => handleDeleteOrder(order._id)}
@@ -653,7 +653,7 @@ const AdminPage = () => {
                   <tbody>
                     {corporateOrders.map((order) => (
                       <tr key={order._id}>
-                        <td>
+                        <td data-label="Ref & Date">
                           <div className="invoice-badge">{order.invoiceNumber}</div>
                           <div className="muted-text">
                             {new Date(order.createdAt).toLocaleString("en-IN", {
@@ -662,7 +662,7 @@ const AdminPage = () => {
                             })}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Contact & Organisation">
                           <strong>{order.customer?.name}</strong>
                           {order.customer?.organisation && (
                             <div className="muted-text" style={{ color: "#d4a017", fontWeight: 600 }}>
@@ -672,7 +672,7 @@ const AdminPage = () => {
                           <div className="muted-text">{order.customer?.phone}</div>
                           <div className="muted-text">{order.customer?.email}</div>
                         </td>
-                        <td>
+                        <td data-label="Event / Program">
                           <strong>{order.corporateDetails?.programType}</strong>
                           {(order.mealsScheduled || []).length > 0 && (
                             <div className="muted-text">
@@ -680,7 +680,7 @@ const AdminPage = () => {
                             </div>
                           )}
                         </td>
-                        <td>
+                        <td data-label="Guests & Style">
                           <strong className="gold-text">
                             {order.corporateDetails?.guestsCount || 0} Guests
                           </strong>
@@ -688,7 +688,7 @@ const AdminPage = () => {
                             {order.corporateDetails?.serviceStyle}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Status">
                           <CustomSelect
                             className={`status-select-wrap status-${(order.status || "Pending").toLowerCase()}`}
                             value={order.status || "Pending"}
@@ -696,7 +696,7 @@ const AdminPage = () => {
                             onChange={(val) => handleStatusChange(order._id, val)}
                           />
                         </td>
-                        <td>
+                        <td data-label="Action" className="td-action">
                           <button
                             className="icon-danger-btn"
                             onClick={() => handleDeleteOrder(order._id)}
@@ -786,7 +786,7 @@ const AdminPage = () => {
                   <tbody>
                     {customOrders.map((order) => (
                       <tr key={order._id}>
-                        <td>
+                        <td data-label="Ref & Date">
                           <div className="invoice-badge">{order.invoiceNumber}</div>
                           <div className="muted-text">
                             {new Date(order.createdAt).toLocaleString("en-IN", {
@@ -795,13 +795,13 @@ const AdminPage = () => {
                             })}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Customer">
                           <strong>{order.customer?.name}</strong>
                           <div className="muted-text">{order.customer?.phone}</div>
                           <div className="muted-text">{order.customer?.email}</div>
                           <div className="muted-text">{order.customer?.address}</div>
                         </td>
-                        <td>
+                        <td data-label="Custom Items">
                           <ul className="order-items-list">
                             {(order.customMealDetails?.items || []).map((itemName, idx) => (
                               <li key={idx}>
@@ -810,13 +810,13 @@ const AdminPage = () => {
                             ))}
                           </ul>
                         </td>
-                        <td>
+                        <td data-label="Plates">
                           <strong className="gold-text">
                             {order.customMealDetails?.plates || 1}{" "}
                             {(order.customMealDetails?.plates || 1) === 1 ? "Plate" : "Plates"}
                           </strong>
                         </td>
-                        <td>
+                        <td data-label="Status">
                           <CustomSelect
                             className={`status-select-wrap status-${(order.status || "Pending").toLowerCase()}`}
                             value={order.status || "Pending"}
@@ -824,7 +824,7 @@ const AdminPage = () => {
                             onChange={(val) => handleStatusChange(order._id, val)}
                           />
                         </td>
-                        <td>
+                        <td data-label="Action" className="td-action">
                           <button
                             className="icon-danger-btn"
                             onClick={() => handleDeleteOrder(order._id)}
@@ -940,7 +940,7 @@ const AdminPage = () => {
                       const draft = editingDrafts[item._id] || item;
                       return (
                         <tr key={item._id}>
-                          <td>
+                          <td data-label="Category">
                             <CustomSelect
                               value={draft.category}
                               options={CATEGORIES.map((c) => ({
@@ -952,7 +952,7 @@ const AdminPage = () => {
                               }
                             />
                           </td>
-                          <td>
+                          <td data-label="Item Name">
                             <input
                               type="text"
                               className="inline-input"
@@ -962,7 +962,7 @@ const AdminPage = () => {
                               }
                             />
                           </td>
-                          <td>
+                          <td data-label="Price (₹)">
                             <div className="price-stepper">
                               <button
                                 type="button"
@@ -1003,7 +1003,7 @@ const AdminPage = () => {
                               </button>
                             </div>
                           </td>
-                          <td>
+                          <td data-label="Description">
                             <input
                               type="text"
                               className="inline-input"
@@ -1013,7 +1013,7 @@ const AdminPage = () => {
                               }
                             />
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td data-label="Base Meal" className="td-center td-toggle">
                             <input
                               type="checkbox"
                               checked={Boolean(draft.isBase)}
@@ -1022,7 +1022,7 @@ const AdminPage = () => {
                               }
                             />
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td data-label="Available" className="td-center td-toggle">
                             <input
                               type="checkbox"
                               checked={Boolean(draft.isAvailable)}
@@ -1031,7 +1031,7 @@ const AdminPage = () => {
                               }
                             />
                           </td>
-                          <td>
+                          <td data-label="Actions" className="td-action">
                             <div className="row-actions">
                               <button
                                 className="icon-save-btn"
